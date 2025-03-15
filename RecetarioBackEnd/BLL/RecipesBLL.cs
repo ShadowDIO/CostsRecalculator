@@ -44,7 +44,7 @@ namespace RecetarioBackEnd.BLL
                 Ingredients = recipeModel.RecipeIngredients.Select(p => new RecipeIngredientDTO()
                 {
                     Id = (int)p.Id,
-                    Ingredient = IngredientsBLL.GetIngredientById(p.Ingredient.Id),
+                    Ingredient = IngredientsBLL.GetIngredientById(p.IngredientId),
                     Quantity = p.Quantity,
                     Efficiency = p.Efficiency,
                     Cost = (p.Ingredient.Cost / p.Ingredient.AmountSoldBy) * p.Quantity

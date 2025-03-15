@@ -16,8 +16,8 @@
 
         public double Cost { get; set; }
 
-        public IEnumerable<RecipeIngredientDTO> Ingredients { get; set; } = new List<RecipeIngredientDTO>();
+        public IEnumerable<RecipeIngredientDTO> Ingredients { get; set; } = [];
 
-        public IEnumerable<RecipeSubRecipeDTO> SubRecipes { get; set; } = new List<RecipeSubRecipeDTO>();
+        public IEnumerable<RecipeSubRecipeDTO> SubRecipes { get; set; } = [];
     }
 }

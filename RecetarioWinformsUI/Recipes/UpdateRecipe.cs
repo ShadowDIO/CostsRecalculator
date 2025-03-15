@@ -1,20 +1,20 @@
-﻿using RecetarioBackEnd.BLL;
-using RecetarioBackEnd.BLL.Interfaces;
+﻿using RecetarioBackEnd.BLL.Interfaces;
 using RecetarioBackEnd.DTO;
 using RecetarioBackEnd.Models;
 using RecetarioWinformsUI.Events;
 using System.Data;
-using static RecetarioWinformsUI.Recipes.SelectRecipeIngredient;
+using System.ComponentModel;
 
 namespace RecetarioWinformsUI.Recipes
 {
     public partial class UpdateRecipe : Form
     {
-        public RecipeDTO Recipe { get; private set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public RecipeDTO? Recipe { get; private set; }
 
-        private List<RecipeIngredientDTO> Ingredients = new();
+        private List<RecipeIngredientDTO> Ingredients = [];
 
-        private List<RecipeSubRecipeDTO> SubRecipes = new();
+        private List<RecipeSubRecipeDTO> SubRecipes = [];
 
         private readonly IRecipesBLL RecipesBLL;
         private readonly IUnitsBLL UnitsBLL;
@@ -78,8 +78,8 @@ namespace RecetarioWinformsUI.Recipes
         private void LoadDataSource(int recipeId)
         {
             Recipe = RecipesBLL.GetRecipe(recipeId, includeUnits: true, includeIngredientsAndSubRecipes: true);
-            Ingredients = Recipe.Ingredients.ToList();
-            SubRecipes = Recipe.SubRecipes.ToList();
+            Ingredients = Recipe?.Ingredients.ToList() ?? [];
+            SubRecipes = Recipe?.SubRecipes.ToList() ?? [];
         }
 
         private void CbUnitsDataBind()
@@ -288,13 +288,5 @@ namespace RecetarioWinformsUI.Recipes
                 Efficiency = ingredient.Efficiency
             };
         }
-
-
-
-
-
-
-
-
     }
 }
