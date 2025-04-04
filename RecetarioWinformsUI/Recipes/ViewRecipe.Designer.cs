@@ -30,6 +30,7 @@
         {
             groupBox4 = new GroupBox();
             groupBox6 = new GroupBox();
+            rbMSRP = new RadioButton();
             rbRecalculateByWeight = new RadioButton();
             rbRecalculateByCost = new RadioButton();
             groupBox5 = new GroupBox();
@@ -63,6 +64,8 @@
             IngredientEfficiency = new DataGridViewTextBoxColumn();
             Cost = new DataGridViewTextBoxColumn();
             groupBox1 = new GroupBox();
+            label14 = new Label();
+            label13 = new Label();
             txtUnits = new TextBox();
             cbMarginEarnings = new ComboBox();
             label12 = new Label();
@@ -104,20 +107,33 @@
             groupBox4.Controls.Add(cbRecalculateField);
             groupBox4.Location = new Point(27, 80);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new Size(567, 113);
+            groupBox4.Size = new Size(277, 521);
             groupBox4.TabIndex = 17;
             groupBox4.TabStop = false;
             groupBox4.Text = "Recalcular";
             // 
             // groupBox6
             // 
+            groupBox6.Controls.Add(rbMSRP);
             groupBox6.Controls.Add(rbRecalculateByWeight);
             groupBox6.Controls.Add(rbRecalculateByCost);
             groupBox6.Location = new Point(12, 14);
             groupBox6.Name = "groupBox6";
-            groupBox6.Size = new Size(102, 85);
+            groupBox6.Size = new Size(112, 100);
             groupBox6.TabIndex = 13;
             groupBox6.TabStop = false;
+            // 
+            // rbMSRP
+            // 
+            rbMSRP.AutoSize = true;
+            rbMSRP.Location = new Point(11, 59);
+            rbMSRP.Name = "rbMSRP";
+            rbMSRP.Size = new Size(101, 34);
+            rbMSRP.TabIndex = 3;
+            rbMSRP.Text = "Precio público\r\nsugerido";
+            rbMSRP.UseVisualStyleBackColor = true;
+            rbMSRP.Visible = false;
+            rbMSRP.CheckedChanged += RbFiltersChanged;
             // 
             // rbRecalculateByWeight
             // 
@@ -125,9 +141,10 @@
             rbRecalculateByWeight.Location = new Point(11, 40);
             rbRecalculateByWeight.Name = "rbRecalculateByWeight";
             rbRecalculateByWeight.Size = new Size(71, 19);
-            rbRecalculateByWeight.TabIndex = 3;
+            rbRecalculateByWeight.TabIndex = 2;
             rbRecalculateByWeight.Text = "Por Peso";
             rbRecalculateByWeight.UseVisualStyleBackColor = true;
+            rbRecalculateByWeight.CheckedChanged += RbFiltersChanged;
             // 
             // rbRecalculateByCost
             // 
@@ -136,61 +153,62 @@
             rbRecalculateByCost.Location = new Point(11, 22);
             rbRecalculateByCost.Name = "rbRecalculateByCost";
             rbRecalculateByCost.Size = new Size(77, 19);
-            rbRecalculateByCost.TabIndex = 2;
+            rbRecalculateByCost.TabIndex = 1;
             rbRecalculateByCost.TabStop = true;
             rbRecalculateByCost.Text = "Por Costo";
             rbRecalculateByCost.UseVisualStyleBackColor = true;
+            rbRecalculateByCost.CheckedChanged += RbFiltersChanged;
             // 
             // groupBox5
             // 
             groupBox5.Controls.Add(rbRecalculateBySubRecipe);
             groupBox5.Controls.Add(rbRecalculateByIngredient);
             groupBox5.Controls.Add(rbRecalculateByRecipeTotal);
-            groupBox5.Location = new Point(120, 14);
+            groupBox5.Location = new Point(130, 14);
             groupBox5.Name = "groupBox5";
-            groupBox5.Size = new Size(161, 85);
+            groupBox5.Size = new Size(129, 100);
             groupBox5.TabIndex = 12;
             groupBox5.TabStop = false;
             // 
             // rbRecalculateBySubRecipe
             // 
             rbRecalculateBySubRecipe.AutoSize = true;
-            rbRecalculateBySubRecipe.Location = new Point(7, 60);
+            rbRecalculateBySubRecipe.Location = new Point(11, 60);
             rbRecalculateBySubRecipe.Name = "rbRecalculateBySubRecipe";
             rbRecalculateBySubRecipe.Size = new Size(80, 19);
-            rbRecalculateBySubRecipe.TabIndex = 14;
+            rbRecalculateBySubRecipe.TabIndex = 6;
             rbRecalculateBySubRecipe.Text = "SubReceta";
             rbRecalculateBySubRecipe.UseVisualStyleBackColor = true;
-            rbRecalculateBySubRecipe.CheckedChanged += RbRecalculateBy_CheckedChanged;
+            rbRecalculateBySubRecipe.CheckedChanged += RbFiltersChanged;
             // 
             // rbRecalculateByIngredient
             // 
             rbRecalculateByIngredient.AutoSize = true;
-            rbRecalculateByIngredient.Location = new Point(7, 37);
+            rbRecalculateByIngredient.Location = new Point(11, 37);
             rbRecalculateByIngredient.Name = "rbRecalculateByIngredient";
             rbRecalculateByIngredient.Size = new Size(85, 19);
-            rbRecalculateByIngredient.TabIndex = 13;
+            rbRecalculateByIngredient.TabIndex = 5;
             rbRecalculateByIngredient.Text = "Ingrediente";
             rbRecalculateByIngredient.UseVisualStyleBackColor = true;
-            rbRecalculateByIngredient.CheckedChanged += RbRecalculateBy_CheckedChanged;
+            rbRecalculateByIngredient.CheckedChanged += RbFiltersChanged;
             // 
             // rbRecalculateByRecipeTotal
             // 
             rbRecalculateByRecipeTotal.AutoSize = true;
             rbRecalculateByRecipeTotal.Checked = true;
-            rbRecalculateByRecipeTotal.Location = new Point(7, 16);
+            rbRecalculateByRecipeTotal.Location = new Point(11, 16);
             rbRecalculateByRecipeTotal.Name = "rbRecalculateByRecipeTotal";
             rbRecalculateByRecipeTotal.Size = new Size(104, 19);
-            rbRecalculateByRecipeTotal.TabIndex = 12;
+            rbRecalculateByRecipeTotal.TabIndex = 4;
             rbRecalculateByRecipeTotal.TabStop = true;
             rbRecalculateByRecipeTotal.Text = "Total de Receta";
             rbRecalculateByRecipeTotal.UseVisualStyleBackColor = true;
-            rbRecalculateByRecipeTotal.CheckedChanged += RbRecalculateBy_CheckedChanged;
+            rbRecalculateByRecipeTotal.CheckedChanged += RbFiltersChanged;
             // 
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new Point(311, 14);
+            label9.Location = new Point(12, 119);
             label9.Name = "label9";
             label9.Size = new Size(33, 15);
             label9.TabIndex = 8;
@@ -198,10 +216,10 @@
             // 
             // btnRecalculateRecipe
             // 
-            btnRecalculateRecipe.Location = new Point(473, 30);
+            btnRecalculateRecipe.Location = new Point(184, 174);
             btnRecalculateRecipe.Name = "btnRecalculateRecipe";
             btnRecalculateRecipe.Size = new Size(75, 23);
-            btnRecalculateRecipe.TabIndex = 7;
+            btnRecalculateRecipe.TabIndex = 9;
             btnRecalculateRecipe.Text = "&Recalcular";
             btnRecalculateRecipe.UseVisualStyleBackColor = true;
             btnRecalculateRecipe.Click += BtnRecalculateRecipe_Click;
@@ -209,22 +227,23 @@
             // txtRecalculateValue
             // 
             txtRecalculateValue.DecimalPlaces = 2;
-            txtRecalculateValue.Location = new Point(311, 32);
+            txtRecalculateValue.Location = new Point(12, 139);
             txtRecalculateValue.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
             txtRecalculateValue.Minimum = new decimal(new int[] { 1, 0, 0, 327680 });
             txtRecalculateValue.Name = "txtRecalculateValue";
             txtRecalculateValue.Size = new Size(120, 23);
-            txtRecalculateValue.TabIndex = 6;
+            txtRecalculateValue.TabIndex = 7;
+            txtRecalculateValue.TextAlign = HorizontalAlignment.Right;
             txtRecalculateValue.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(311, 58);
+            label1.Location = new Point(138, 119);
             label1.Name = "label1";
-            label1.Size = new Size(46, 15);
+            label1.Size = new Size(67, 15);
             label1.TabIndex = 3;
-            label1.Text = "Campo";
+            label1.Text = "Ingrediente";
             // 
             // cbRecalculateField
             // 
@@ -233,10 +252,10 @@
             cbRecalculateField.DropDownStyle = ComboBoxStyle.DropDownList;
             cbRecalculateField.Enabled = false;
             cbRecalculateField.FormattingEnabled = true;
-            cbRecalculateField.Location = new Point(311, 76);
+            cbRecalculateField.Location = new Point(138, 138);
             cbRecalculateField.Name = "cbRecalculateField";
             cbRecalculateField.Size = new Size(121, 23);
-            cbRecalculateField.TabIndex = 2;
+            cbRecalculateField.TabIndex = 8;
             cbRecalculateField.ValueMember = "Id";
             // 
             // groupBox3
@@ -244,9 +263,9 @@
             groupBox3.Controls.Add(txtSubRecipesCost);
             groupBox3.Controls.Add(label8);
             groupBox3.Controls.Add(gvSubRecipes);
-            groupBox3.Location = new Point(27, 626);
+            groupBox3.Location = new Point(336, 439);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(567, 219);
+            groupBox3.Size = new Size(453, 162);
             groupBox3.TabIndex = 16;
             groupBox3.TabStop = false;
             groupBox3.Text = "SubRecetas";
@@ -254,7 +273,7 @@
             // txtSubRecipesCost
             // 
             txtSubRecipesCost.Enabled = false;
-            txtSubRecipesCost.Location = new Point(460, 187);
+            txtSubRecipesCost.Location = new Point(345, 129);
             txtSubRecipesCost.Name = "txtSubRecipesCost";
             txtSubRecipesCost.PlaceholderText = "$ 0.00";
             txtSubRecipesCost.ReadOnly = true;
@@ -265,7 +284,7 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(350, 190);
+            label8.Location = new Point(232, 134);
             label8.Name = "label8";
             label8.Size = new Size(104, 15);
             label8.TabIndex = 16;
@@ -284,9 +303,8 @@
             gvSubRecipes.Name = "gvSubRecipes";
             gvSubRecipes.ReadOnly = true;
             gvSubRecipes.RowHeadersVisible = false;
-            gvSubRecipes.RowTemplate.Height = 25;
             gvSubRecipes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            gvSubRecipes.Size = new Size(555, 140);
+            gvSubRecipes.Size = new Size(440, 90);
             gvSubRecipes.TabIndex = 1;
             gvSubRecipes.CellContentClick += GvSubRecipes_CellContentClick;
             gvSubRecipes.CellContentDoubleClick += GvSubRecipes_CellContentDoubleClick;
@@ -354,9 +372,9 @@
             groupBox2.Controls.Add(txtIngredientCosts);
             groupBox2.Controls.Add(label7);
             groupBox2.Controls.Add(gvRecipeIngredients);
-            groupBox2.Location = new Point(27, 403);
+            groupBox2.Location = new Point(336, 267);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(567, 217);
+            groupBox2.Size = new Size(453, 165);
             groupBox2.TabIndex = 15;
             groupBox2.TabStop = false;
             groupBox2.Text = "Ingredientes";
@@ -364,7 +382,7 @@
             // txtIngredientCosts
             // 
             txtIngredientCosts.Enabled = false;
-            txtIngredientCosts.Location = new Point(457, 184);
+            txtIngredientCosts.Location = new Point(345, 134);
             txtIngredientCosts.Name = "txtIngredientCosts";
             txtIngredientCosts.PlaceholderText = "$ 0.00";
             txtIngredientCosts.ReadOnly = true;
@@ -375,7 +393,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(344, 187);
+            label7.Location = new Point(232, 137);
             label7.Name = "label7";
             label7.Size = new Size(109, 15);
             label7.TabIndex = 14;
@@ -396,9 +414,8 @@
             gvRecipeIngredients.Name = "gvRecipeIngredients";
             gvRecipeIngredients.ReadOnly = true;
             gvRecipeIngredients.RowHeadersVisible = false;
-            gvRecipeIngredients.RowTemplate.Height = 25;
             gvRecipeIngredients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            gvRecipeIngredients.Size = new Size(555, 140);
+            gvRecipeIngredients.Size = new Size(439, 90);
             gvRecipeIngredients.TabIndex = 0;
             gvRecipeIngredients.VirtualMode = true;
             // 
@@ -452,6 +469,8 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(label14);
+            groupBox1.Controls.Add(label13);
             groupBox1.Controls.Add(txtUnits);
             groupBox1.Controls.Add(cbMarginEarnings);
             groupBox1.Controls.Add(label12);
@@ -466,17 +485,35 @@
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label2);
-            groupBox1.Location = new Point(27, 198);
+            groupBox1.Location = new Point(336, 80);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(567, 199);
+            groupBox1.Size = new Size(453, 185);
             groupBox1.TabIndex = 14;
             groupBox1.TabStop = false;
             groupBox1.Text = "Datos Generales";
             // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Location = new Point(416, 153);
+            label14.Name = "label14";
+            label14.Size = new Size(17, 15);
+            label14.TabIndex = 19;
+            label14.Text = "%";
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(414, 99);
+            label13.Name = "label13";
+            label13.Size = new Size(17, 15);
+            label13.TabIndex = 18;
+            label13.Text = "%";
+            // 
             // txtUnits
             // 
             txtUnits.Enabled = false;
-            txtUnits.Location = new Point(160, 106);
+            txtUnits.Location = new Point(160, 96);
             txtUnits.Name = "txtUnits";
             txtUnits.ReadOnly = true;
             txtUnits.Size = new Size(127, 23);
@@ -487,17 +524,18 @@
             cbMarginEarnings.DisplayMember = "Value";
             cbMarginEarnings.DropDownStyle = ComboBoxStyle.DropDownList;
             cbMarginEarnings.FormattingEnabled = true;
-            cbMarginEarnings.Location = new Point(454, 160);
+            cbMarginEarnings.Location = new Point(312, 150);
             cbMarginEarnings.Name = "cbMarginEarnings";
-            cbMarginEarnings.Size = new Size(103, 23);
+            cbMarginEarnings.Size = new Size(98, 23);
             cbMarginEarnings.Sorted = true;
             cbMarginEarnings.TabIndex = 16;
+            cbMarginEarnings.ValueMember = "Key";
             cbMarginEarnings.SelectedIndexChanged += CbMarginEarnings_SelectedIndexChanged;
             // 
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new Point(454, 142);
+            label12.Location = new Point(312, 132);
             label12.Name = "label12";
             label12.Size = new Size(92, 15);
             label12.TabIndex = 15;
@@ -506,18 +544,18 @@
             // txtSuggestedPrice
             // 
             txtSuggestedPrice.Enabled = false;
-            txtSuggestedPrice.Location = new Point(311, 160);
+            txtSuggestedPrice.Location = new Point(160, 145);
             txtSuggestedPrice.Name = "txtSuggestedPrice";
             txtSuggestedPrice.PlaceholderText = "$ 0.00";
             txtSuggestedPrice.ReadOnly = true;
-            txtSuggestedPrice.Size = new Size(120, 23);
+            txtSuggestedPrice.Size = new Size(127, 23);
             txtSuggestedPrice.TabIndex = 14;
             txtSuggestedPrice.TabStop = false;
             // 
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new Point(298, 142);
+            label11.Location = new Point(160, 132);
             label11.Name = "label11";
             label11.Size = new Size(133, 15);
             label11.TabIndex = 13;
@@ -526,7 +564,7 @@
             // txtCost
             // 
             txtCost.Enabled = false;
-            txtCost.Location = new Point(454, 106);
+            txtCost.Location = new Point(23, 145);
             txtCost.Name = "txtCost";
             txtCost.PlaceholderText = "$ 0.00";
             txtCost.ReadOnly = true;
@@ -537,7 +575,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(454, 87);
+            label6.Location = new Point(23, 126);
             label6.Name = "label6";
             label6.Size = new Size(94, 15);
             label6.TabIndex = 9;
@@ -546,43 +584,45 @@
             // txtEfficiency
             // 
             txtEfficiency.Enabled = false;
-            txtEfficiency.Location = new Point(311, 106);
-            txtEfficiency.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
+            txtEfficiency.Location = new Point(311, 96);
+            txtEfficiency.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             txtEfficiency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             txtEfficiency.Name = "txtEfficiency";
             txtEfficiency.ReadOnly = true;
-            txtEfficiency.Size = new Size(120, 23);
+            txtEfficiency.Size = new Size(99, 23);
             txtEfficiency.TabIndex = 4;
+            txtEfficiency.TextAlign = HorizontalAlignment.Right;
             txtEfficiency.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
             // txtAmount
             // 
-            txtAmount.DecimalPlaces = 4;
+            txtAmount.DecimalPlaces = 2;
             txtAmount.Enabled = false;
-            txtAmount.Location = new Point(23, 105);
+            txtAmount.Location = new Point(23, 95);
             txtAmount.Maximum = new decimal(new int[] { 1215752191, 23, 0, 0 });
             txtAmount.Name = "txtAmount";
             txtAmount.ReadOnly = true;
             txtAmount.Size = new Size(120, 23);
             txtAmount.TabIndex = 2;
+            txtAmount.TextAlign = HorizontalAlignment.Right;
             txtAmount.ThousandsSeparator = true;
             txtAmount.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // txtRecipeName
             // 
             txtRecipeName.Enabled = false;
-            txtRecipeName.Location = new Point(20, 52);
+            txtRecipeName.Location = new Point(20, 42);
             txtRecipeName.Multiline = false;
             txtRecipeName.Name = "txtRecipeName";
             txtRecipeName.ReadOnly = true;
-            txtRecipeName.Size = new Size(537, 21);
+            txtRecipeName.Size = new Size(411, 21);
             txtRecipeName.TabIndex = 1;
             txtRecipeName.Text = "";
             // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(311, 87);
+            label5.Location = new Point(311, 77);
             label5.Name = "label5";
             label5.Size = new Size(75, 15);
             label5.TabIndex = 3;
@@ -591,7 +631,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(160, 87);
+            label4.Location = new Point(160, 77);
             label4.Name = "label4";
             label4.Size = new Size(56, 15);
             label4.TabIndex = 2;
@@ -600,7 +640,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(23, 87);
+            label3.Location = new Point(23, 77);
             label3.Name = "label3";
             label3.Size = new Size(112, 15);
             label3.TabIndex = 1;
@@ -609,7 +649,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(23, 34);
+            label2.Location = new Point(23, 24);
             label2.Name = "label2";
             label2.Size = new Size(51, 15);
             label2.TabIndex = 0;
@@ -618,8 +658,8 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
-            label10.Location = new Point(27, 15);
+            label10.Font = new Font("Segoe UI", 15.75F);
+            label10.Location = new Point(27, 14);
             label10.Name = "label10";
             label10.Size = new Size(250, 30);
             label10.TabIndex = 18;
@@ -627,7 +667,7 @@
             // 
             // btnClose
             // 
-            btnClose.Location = new Point(514, 864);
+            btnClose.Location = new Point(708, 607);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(75, 23);
             btnClose.TabIndex = 19;
@@ -638,7 +678,7 @@
             // lblRecipeName
             // 
             lblRecipeName.AutoSize = true;
-            lblRecipeName.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            lblRecipeName.Font = new Font("Segoe UI", 14.25F);
             lblRecipeName.Location = new Point(78, 51);
             lblRecipeName.Name = "lblRecipeName";
             lblRecipeName.Size = new Size(138, 25);
@@ -649,7 +689,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(621, 899);
+            ClientSize = new Size(799, 638);
             Controls.Add(lblRecipeName);
             Controls.Add(btnClose);
             Controls.Add(label10);
@@ -736,5 +776,8 @@
         private DataGridViewTextBoxColumn IngredientEfficiency;
         private DataGridViewTextBoxColumn Cost;
         private Label lblRecipeName;
+        private Label label13;
+        private Label label14;
+        private RadioButton rbMSRP;
     }
 }

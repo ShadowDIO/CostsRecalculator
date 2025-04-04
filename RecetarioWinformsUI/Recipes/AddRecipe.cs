@@ -140,7 +140,7 @@ namespace RecetarioWinformsUI.Recipes
 
             var recipeId = RecipesBLL.CreateRecipe(newRecipeDTO); // Utilizamos el método CreateRecipe para insertar
 
-            Parallel.ForEach(Ingredients, recipeIngredient =>
+            foreach(var recipeIngredient in Ingredients)
             {
                 // Verificar si ya existe el ingrediente para la receta actual
                 if (!RecipeIngredientsBLL.IngredientExistsInRecipe(recipeId, recipeIngredient.IngredientId))
@@ -153,10 +153,10 @@ namespace RecetarioWinformsUI.Recipes
                         Efficiency = recipeIngredient.Efficiency
                     });
                 }
-            });
+            };
 
             // Y para subrecetas:
-            Parallel.ForEach(SubRecipes, subRecipe =>
+            foreach(var subRecipe in SubRecipes)
             {
                 if (!RecipeSubRecipesBLL.SubRecipeExistsInRecipe(recipeId, subRecipe.SubRecipeId))
                 {
@@ -168,7 +168,7 @@ namespace RecetarioWinformsUI.Recipes
                         Efficiency = subRecipe.Efficiency
                     });
                 }
-            });
+            };
 
 
             GlobalUIEvents.Instance.DispatchOnRecipeAdded(this, new EventArgs());

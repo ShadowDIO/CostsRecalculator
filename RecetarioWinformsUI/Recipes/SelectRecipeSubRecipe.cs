@@ -10,9 +10,9 @@ namespace RecetarioWinformsUI.Recipes
     public partial class SelectRecipeSubRecipe : Form
     {
         public delegate void SubRecipeSelected(object sender, SubRecipeSelectedEventArgs e);
-        public event SubRecipeSelected OnSubRecipeSelected;
+        public event SubRecipeSelected? OnSubRecipeSelected = null;
 
-        private List<int> UsedRecipeIds;
+        private readonly List<int> UsedRecipeIds;
 
         private List<RecipeDTO> RecipesAvailable;
 
@@ -21,7 +21,7 @@ namespace RecetarioWinformsUI.Recipes
 
         public SelectRecipeSubRecipe(IEnumerable<int> usedRecipeIds, IRecipesBLL recipesBLL, IUnitsBLL unitsBLL)
         {
-            UsedRecipeIds = usedRecipeIds.ToList();
+            UsedRecipeIds = [.. usedRecipeIds];
             RecipesBLL = recipesBLL;
             UnitsBLL = unitsBLL;
 
@@ -81,7 +81,7 @@ namespace RecetarioWinformsUI.Recipes
             {
                 Id = p.Ingredient.Id, 
                 IngredientName = StringHelper.TrimLongName(p.Ingredient.IngredientName),  
-                IngredientQuantity = p.Quantity,
+                IngredientQuantity = p.Quantity.ToString("F2"),
                 IngredientUnit = p.Ingredient.UnitName, 
                 IngredientEfficiency = p.Efficiency.ToString("P"),
                 IngredientCost = ((p.Ingredient.Cost / p.Ingredient.AmountSoldBy) * p.Quantity).ToString("C2")  
@@ -93,7 +93,7 @@ namespace RecetarioWinformsUI.Recipes
             {
                 SubRecipeId = p.SubRecipe.Id,  
                 SubRecipeName = StringHelper.TrimLongName(p.SubRecipe.RecipeName),  
-                SubRecipeQuantity = p.Quantity,
+                SubRecipeQuantity = p.Quantity.ToString("F2"),
                 SubRecipeUnit = p.SubRecipe.UnitName, 
                 SubRecipeEfficiency = $"{p.Efficiency:P}",
                 SubRecipeCost = $"{RecipesBLL.CalculateRecipeCosts(p.SubRecipe):C2}",
@@ -180,11 +180,6 @@ namespace RecetarioWinformsUI.Recipes
             // Cerrar el formulario
             Close();
         }
-
-
-
-
-
 
         private void GvSubRecipe_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {

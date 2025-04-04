@@ -71,6 +71,7 @@
             SubRecipeEfficiency = new DataGridViewTextBoxColumn();
             SubRecipeCost = new DataGridViewTextBoxColumn();
             btnRemoveRecipeSubRecipeView = new DataGridViewButtonColumn();
+            label13 = new Label();
             groupBox1.SuspendLayout();
             groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gvSubRecipe).BeginInit();
@@ -105,6 +106,7 @@
             // groupBox1
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(label13);
             groupBox1.Controls.Add(cbUnits);
             groupBox1.Controls.Add(groupBox3);
             groupBox1.Controls.Add(groupBox2);
@@ -130,7 +132,7 @@
             cbUnits.DisplayMember = "Abbreviation";
             cbUnits.DropDownStyle = ComboBoxStyle.DropDownList;
             cbUnits.FormattingEnabled = true;
-            cbUnits.Location = new Point(265, 113);
+            cbUnits.Location = new Point(143, 114);
             cbUnits.Name = "cbUnits";
             cbUnits.Size = new Size(95, 23);
             cbUnits.Sorted = true;
@@ -165,7 +167,6 @@
             gvSubRecipe.Name = "gvSubRecipe";
             gvSubRecipe.ReadOnly = true;
             gvSubRecipe.RowHeadersVisible = false;
-            gvSubRecipe.RowTemplate.Height = 25;
             gvSubRecipe.Size = new Size(579, 140);
             gvSubRecipe.TabIndex = 16;
             gvSubRecipe.VirtualMode = true;
@@ -299,7 +300,6 @@
             gvRecipeIngredients.Name = "gvRecipeIngredients";
             gvRecipeIngredients.ReadOnly = true;
             gvRecipeIngredients.RowHeadersVisible = false;
-            gvRecipeIngredients.RowTemplate.Height = 25;
             gvRecipeIngredients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             gvRecipeIngredients.Size = new Size(583, 140);
             gvRecipeIngredients.TabIndex = 0;
@@ -356,7 +356,7 @@
             // txtCalculatedEfficiency
             // 
             txtCalculatedEfficiency.Enabled = false;
-            txtCalculatedEfficiency.Location = new Point(382, 113);
+            txtCalculatedEfficiency.Location = new Point(376, 115);
             txtCalculatedEfficiency.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
             txtCalculatedEfficiency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             txtCalculatedEfficiency.Name = "txtCalculatedEfficiency";
@@ -378,7 +378,7 @@
             // txtCost
             // 
             txtCost.Enabled = false;
-            txtCost.Location = new Point(505, 113);
+            txtCost.Location = new Point(501, 116);
             txtCost.Name = "txtCost";
             txtCost.PlaceholderText = "$ 0.00";
             txtCost.ReadOnly = true;
@@ -388,8 +388,8 @@
             // 
             // txtAmount
             // 
-            txtAmount.DecimalPlaces = 4;
-            txtAmount.Location = new Point(16, 113);
+            txtAmount.DecimalPlaces = 2;
+            txtAmount.Location = new Point(16, 116);
             txtAmount.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
             txtAmount.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             txtAmount.Name = "txtAmount";
@@ -401,11 +401,11 @@
             // 
             // txtEfficiency
             // 
-            txtEfficiency.Location = new Point(140, 113);
+            txtEfficiency.Location = new Point(262, 115);
             txtEfficiency.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
             txtEfficiency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             txtEfficiency.Name = "txtEfficiency";
-            txtEfficiency.Size = new Size(107, 23);
+            txtEfficiency.Size = new Size(91, 23);
             txtEfficiency.TabIndex = 3;
             txtEfficiency.Value = new decimal(new int[] { 100, 0, 0, 0 });
             txtEfficiency.ValueChanged += TxtEfficiency_ValueChanged;
@@ -422,7 +422,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(141, 94);
+            label5.Location = new Point(263, 96);
             label5.Name = "label5";
             label5.Size = new Size(75, 15);
             label5.TabIndex = 4;
@@ -431,7 +431,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(271, 95);
+            label4.Location = new Point(149, 96);
             label4.Name = "label4";
             label4.Size = new Size(56, 15);
             label4.TabIndex = 4;
@@ -515,6 +515,15 @@
             btnRemoveRecipeSubRecipeView.UseColumnTextForButtonValue = true;
             btnRemoveRecipeSubRecipeView.Width = 29;
             // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(353, 118);
+            label13.Name = "label13";
+            label13.Size = new Size(17, 15);
+            label13.TabIndex = 21;
+            label13.Text = "%";
+            // 
             // SelectRecipeSubRecipe
             // 
             AcceptButton = btnAccept;
@@ -589,5 +598,6 @@
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private DataGridViewButtonColumn btnViewRecipeSubRecipeView;
+        private Label label13;
     }
 }

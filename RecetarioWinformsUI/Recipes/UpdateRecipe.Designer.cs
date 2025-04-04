@@ -57,6 +57,7 @@
             Cost = new DataGridViewTextBoxColumn();
             btnRemoveRecipeIngredient = new DataGridViewButtonColumn();
             groupBox1 = new GroupBox();
+            label9 = new Label();
             txtCost = new TextBox();
             label6 = new Label();
             txtEfficiency = new NumericUpDown();
@@ -80,18 +81,17 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(491, 669);
+            btnCancel.Location = new Point(504, 565);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 27);
             btnCancel.TabIndex = 10;
             btnCancel.Text = "&Cancelar";
             btnCancel.UseVisualStyleBackColor = true;
-            //btnCancel.Click += BtnCancel_Click;
             // 
             // btnUpdateRecipe
             // 
             btnUpdateRecipe.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnUpdateRecipe.Location = new Point(411, 669);
+            btnUpdateRecipe.Location = new Point(424, 565);
             btnUpdateRecipe.Name = "btnUpdateRecipe";
             btnUpdateRecipe.Size = new Size(75, 27);
             btnUpdateRecipe.TabIndex = 9;
@@ -105,9 +105,9 @@
             groupBox3.Controls.Add(label8);
             groupBox3.Controls.Add(btnAddSubRecipe);
             groupBox3.Controls.Add(gvSubRecipe);
-            groupBox3.Location = new Point(6, 438);
+            groupBox3.Location = new Point(11, 391);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(567, 219);
+            groupBox3.Size = new Size(567, 163);
             groupBox3.TabIndex = 14;
             groupBox3.TabStop = false;
             groupBox3.Text = "SubRecetas";
@@ -115,7 +115,7 @@
             // txtSubRecipesCost
             // 
             txtSubRecipesCost.Enabled = false;
-            txtSubRecipesCost.Location = new Point(460, 187);
+            txtSubRecipesCost.Location = new Point(460, 133);
             txtSubRecipesCost.Name = "txtSubRecipesCost";
             txtSubRecipesCost.PlaceholderText = "$ 0.00";
             txtSubRecipesCost.ReadOnly = true;
@@ -126,7 +126,7 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(350, 190);
+            label8.Location = new Point(350, 136);
             label8.Name = "label8";
             label8.Size = new Size(104, 15);
             label8.TabIndex = 16;
@@ -140,7 +140,6 @@
             btnAddSubRecipe.TabIndex = 6;
             btnAddSubRecipe.Text = "+";
             btnAddSubRecipe.UseVisualStyleBackColor = true;
-            //btnAddSubRecipe.Click += BtnAddSubRecipe_Click;
             // 
             // gvSubRecipe
             // 
@@ -154,13 +153,10 @@
             gvSubRecipe.Name = "gvSubRecipe";
             gvSubRecipe.ReadOnly = true;
             gvSubRecipe.RowHeadersVisible = false;
-            gvSubRecipe.RowTemplate.Height = 25;
             gvSubRecipe.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            gvSubRecipe.Size = new Size(555, 140);
+            gvSubRecipe.Size = new Size(555, 90);
             gvSubRecipe.TabIndex = 1;
             gvSubRecipe.VirtualMode = true;
-            //gvSubRecipe.CellContentClick += GvSubRecipe_CellContentClick;
-            //gvSubRecipe.CellContentDoubleClick += GvSubRecipe_CellContentDoubleClick;
             // 
             // SubRecipeId
             // 
@@ -239,7 +235,7 @@
             groupBox2.Controls.Add(gvRecipeIngredients);
             groupBox2.Location = new Point(12, 215);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(567, 217);
+            groupBox2.Size = new Size(567, 170);
             groupBox2.TabIndex = 13;
             groupBox2.TabStop = false;
             groupBox2.Text = "Ingredientes";
@@ -247,7 +243,7 @@
             // txtIngredientCosts
             // 
             txtIngredientCosts.Enabled = false;
-            txtIngredientCosts.Location = new Point(457, 184);
+            txtIngredientCosts.Location = new Point(457, 134);
             txtIngredientCosts.Name = "txtIngredientCosts";
             txtIngredientCosts.PlaceholderText = "$ 0.00";
             txtIngredientCosts.ReadOnly = true;
@@ -258,7 +254,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(344, 187);
+            label7.Location = new Point(344, 137);
             label7.Name = "label7";
             label7.Size = new Size(109, 15);
             label7.TabIndex = 14;
@@ -289,12 +285,10 @@
             gvRecipeIngredients.Name = "gvRecipeIngredients";
             gvRecipeIngredients.ReadOnly = true;
             gvRecipeIngredients.RowHeadersVisible = false;
-            gvRecipeIngredients.RowTemplate.Height = 25;
             gvRecipeIngredients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            gvRecipeIngredients.Size = new Size(555, 140);
+            gvRecipeIngredients.Size = new Size(555, 90);
             gvRecipeIngredients.TabIndex = 0;
             gvRecipeIngredients.VirtualMode = true;
-            //gvRecipeIngredients.CellContentClick += GvRecipeIngredients_CellContentClick;
             // 
             // IngredientId
             // 
@@ -356,6 +350,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(label9);
             groupBox1.Controls.Add(txtCost);
             groupBox1.Controls.Add(label6);
             groupBox1.Controls.Add(txtEfficiency);
@@ -372,6 +367,15 @@
             groupBox1.TabIndex = 12;
             groupBox1.TabStop = false;
             groupBox1.Text = "Datos Generales";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(420, 109);
+            label9.Name = "label9";
+            label9.Size = new Size(17, 15);
+            label9.TabIndex = 13;
+            label9.Text = "%";
             // 
             // txtCost
             // 
@@ -399,8 +403,9 @@
             txtEfficiency.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
             txtEfficiency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             txtEfficiency.Name = "txtEfficiency";
-            txtEfficiency.Size = new Size(120, 23);
+            txtEfficiency.Size = new Size(103, 23);
             txtEfficiency.TabIndex = 4;
+            txtEfficiency.TextAlign = HorizontalAlignment.Right;
             txtEfficiency.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
             // cbUnits
@@ -417,12 +422,13 @@
             // 
             // txtAmount
             // 
-            txtAmount.DecimalPlaces = 4;
+            txtAmount.DecimalPlaces = 2;
             txtAmount.Location = new Point(23, 105);
             txtAmount.Maximum = new decimal(new int[] { 1215752191, 23, 0, 0 });
             txtAmount.Name = "txtAmount";
             txtAmount.Size = new Size(120, 23);
             txtAmount.TabIndex = 2;
+            txtAmount.TextAlign = HorizontalAlignment.Right;
             txtAmount.ThousandsSeparator = true;
             txtAmount.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
@@ -474,7 +480,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Font = new Font("Segoe UI", 15.75F);
             label1.Location = new Point(12, 9);
             label1.Name = "label1";
             label1.Size = new Size(173, 30);
@@ -487,7 +493,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(591, 708);
+            ClientSize = new Size(591, 610);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
@@ -501,6 +507,7 @@
             Name = "UpdateRecipe";
             ShowInTaskbar = false;
             Text = "Actualizar Receta";
+            Load += UpdateRecipe_Load;
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)gvSubRecipe).EndInit();
@@ -556,5 +563,6 @@
         private Label label3;
         private Label label2;
         private Label label1;
+        private Label label9;
     }
 }

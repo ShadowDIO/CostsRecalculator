@@ -45,6 +45,7 @@
             txtIngredientName = new RichTextBox();
             label6 = new Label();
             label2 = new Label();
+            label13 = new Label();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)txtAmountSoldBy).BeginInit();
             ((System.ComponentModel.ISupportInitialize)txtEfficiency).BeginInit();
@@ -75,7 +76,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Font = new Font("Segoe UI", 15.75F);
             label1.Location = new Point(12, 21);
             label1.Name = "label1";
             label1.Size = new Size(217, 30);
@@ -85,13 +86,14 @@
             // groupBox1
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(label13);
             groupBox1.Controls.Add(label7);
             groupBox1.Controls.Add(txtAmountSoldBy);
             groupBox1.Controls.Add(txtEfficiency);
             groupBox1.Controls.Add(cbUnits);
             groupBox1.Controls.Add(txtCost);
-            groupBox1.Controls.Add(label5);
             groupBox1.Controls.Add(label4);
+            groupBox1.Controls.Add(label5);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(txtProvider);
             groupBox1.Controls.Add(txtIngredientName);
@@ -114,6 +116,7 @@
             // 
             // txtAmountSoldBy
             // 
+            txtAmountSoldBy.DecimalPlaces = 2;
             txtAmountSoldBy.Location = new Point(130, 107);
             txtAmountSoldBy.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
             txtAmountSoldBy.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -124,12 +127,12 @@
             // 
             // txtEfficiency
             // 
-            txtEfficiency.Location = new Point(227, 107);
+            txtEfficiency.Location = new Point(324, 107);
             txtEfficiency.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
             txtEfficiency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             txtEfficiency.Name = "txtEfficiency";
-            txtEfficiency.Size = new Size(91, 23);
-            txtEfficiency.TabIndex = 4;
+            txtEfficiency.Size = new Size(75, 23);
+            txtEfficiency.TabIndex = 5;
             txtEfficiency.Tag = "";
             txtEfficiency.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
@@ -138,15 +141,15 @@
             cbUnits.DisplayMember = "Abbreviation";
             cbUnits.DropDownStyle = ComboBoxStyle.DropDownList;
             cbUnits.FormattingEnabled = true;
-            cbUnits.Location = new Point(324, 107);
+            cbUnits.Location = new Point(226, 107);
             cbUnits.Name = "cbUnits";
             cbUnits.Size = new Size(92, 23);
-            cbUnits.TabIndex = 5;
+            cbUnits.TabIndex = 4;
             cbUnits.ValueMember = "Id";
             // 
             // txtCost
             // 
-            txtCost.DecimalPlaces = 4;
+            txtCost.DecimalPlaces = 2;
             txtCost.Location = new Point(22, 108);
             txtCost.Maximum = new decimal(new int[] { 1215752191, 23, 0, 0 });
             txtCost.Name = "txtCost";
@@ -158,7 +161,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(227, 90);
+            label5.Location = new Point(324, 90);
             label5.Name = "label5";
             label5.Size = new Size(75, 15);
             label5.TabIndex = 29;
@@ -167,7 +170,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(324, 90);
+            label4.Location = new Point(226, 90);
             label4.Name = "label4";
             label4.Size = new Size(45, 15);
             label4.TabIndex = 27;
@@ -217,6 +220,15 @@
             label2.TabIndex = 20;
             label2.Text = "Nombre";
             // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(400, 109);
+            label13.Name = "label13";
+            label13.Size = new Size(17, 15);
+            label13.TabIndex = 33;
+            label13.Text = "%";
+            // 
             // UpdateIngredient
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -260,5 +272,6 @@
         private Label label5;
         private Label label4;
         private Label label3;
+        private Label label13;
     }
 }

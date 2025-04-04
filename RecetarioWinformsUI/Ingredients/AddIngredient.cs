@@ -107,5 +107,10 @@ namespace RecetarioWinformsUI.Ingredients
 
             txtIngredientName.Select();
         }
+
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }

@@ -47,6 +47,7 @@
             label1 = new Label();
             btnCancel = new Button();
             btnAccept = new Button();
+            label13 = new Label();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)txtAmount).BeginInit();
             ((System.ComponentModel.ISupportInitialize)txtEfficiency).BeginInit();
@@ -55,6 +56,7 @@
             // groupBox1
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(label13);
             groupBox1.Controls.Add(txtCalculatedEfficiency);
             groupBox1.Controls.Add(label8);
             groupBox1.Controls.Add(txtUnits);
@@ -138,10 +140,10 @@
             // 
             // txtAmount
             // 
-            txtAmount.DecimalPlaces = 4;
+            txtAmount.DecimalPlaces = 2;
             txtAmount.Location = new Point(16, 113);
             txtAmount.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
-            txtAmount.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            txtAmount.Minimum = new decimal(new int[] { 1, 0, 0, 196608 });
             txtAmount.Name = "txtAmount";
             txtAmount.Size = new Size(72, 23);
             txtAmount.TabIndex = 2;
@@ -155,7 +157,7 @@
             txtEfficiency.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
             txtEfficiency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             txtEfficiency.Name = "txtEfficiency";
-            txtEfficiency.Size = new Size(75, 23);
+            txtEfficiency.Size = new Size(57, 23);
             txtEfficiency.TabIndex = 3;
             txtEfficiency.Value = new decimal(new int[] { 100, 0, 0, 0 });
             txtEfficiency.ValueChanged += TxtEfficiency_ValueChanged;
@@ -220,7 +222,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Font = new Font("Segoe UI", 15.75F);
             label1.Location = new Point(12, 12);
             label1.Name = "label1";
             label1.Size = new Size(230, 30);
@@ -247,6 +249,15 @@
             btnAccept.Text = "&Aceptar";
             btnAccept.UseVisualStyleBackColor = true;
             btnAccept.Click += BtnAccept_Click;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(151, 118);
+            label13.Name = "label13";
+            label13.Size = new Size(17, 15);
+            label13.TabIndex = 20;
+            label13.Text = "%";
             // 
             // SelectRecipeIngredient
             // 
@@ -294,5 +305,6 @@
         private TextBox txtUnits;
         private Label label8;
         private TextBox txtCalculatedEfficiency;
+        private Label label13;
     }
 }

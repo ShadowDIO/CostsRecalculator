@@ -35,7 +35,7 @@ namespace RecetarioWinformsUI.Recipes
         {
             if (RecalculateParameters == null)
             {
-                SelectedRecipe = RecipesBLL.GetRecipe(recipeId);
+                SelectedRecipe = RecipesBLL.GetRecipe(recipeId, true);
             }
             else
             {
@@ -50,13 +50,13 @@ namespace RecetarioWinformsUI.Recipes
             txtAmount.Value = Convert.ToDecimal(SelectedRecipe.AmountProduced);
             txtUnits.Text = SelectedRecipe.UnitName;
             txtCost.Text = SelectedRecipe.Cost.ToString("C2");
-            txtEfficiency.Value = Convert.ToDecimal(SelectedRecipe.Efficiency);
+            txtEfficiency.Value = Convert.ToDecimal(SelectedRecipe.Efficiency * 100);
 
             gvRecipeIngredients.DataSource = SelectedRecipe.Ingredients.Select(p => new
             {
                 Id = p.Ingredient.Id,
                 IngredientName = StringHelper.TrimLongName(p.Ingredient.IngredientName),
-                IngredientQuantity = p.Quantity,
+                IngredientQuantity = p.Quantity.ToString("F2"),
                 IngredientUnit = p.Ingredient.UnitName,
                 IngredientEfficiency = p.Efficiency.ToString("P"),
                 IngredientCost = p.Cost.ToString("C2")
@@ -69,7 +69,7 @@ namespace RecetarioWinformsUI.Recipes
             {
                 SubRecipeId = p.SubRecipe?.Id,
                 SubRecipeName = p.SubRecipe?.RecipeName,
-                SubRecipeQuantity = p.Quantity,
+                SubRecipeQuantity = p.Quantity.ToString("F2"),
                 SubRecipeUnit = p.SubRecipe?.UnitName,
                 SubRecipeEfficiency = p.Efficiency.ToString("P"),
                 SubRecipeCost = p.Cost.ToString("C2")
@@ -117,12 +117,12 @@ namespace RecetarioWinformsUI.Recipes
             var valuesCollection = new Dictionary<int, string>();
             for (var i = 28; i < 33; i++)
             {
-                valuesCollection.Add(i, (i / 100d).ToString("P"));
+                valuesCollection.Add(i, (i / 100d).ToString("P0"));
             }
 
             cbMarginEarnings.DisplayMember = "Value";
             cbMarginEarnings.ValueMember = "Key";
-            cbMarginEarnings.DataSource = new BindingSource(valuesCollection, null);
+            cbMarginEarnings.DataSource = new BindingSource(valuesCollection, string.Empty);
             cbMarginEarnings.Update();
         }
 
@@ -163,24 +163,6 @@ namespace RecetarioWinformsUI.Recipes
             var utilityMargin = Single.Parse(txtCost.Text, System.Globalization.NumberStyles.Currency) / recipeMarginPercentage;
 
             txtSuggestedPrice.Text = utilityMargin.ToString("C2");
-        }
-
-        private void RbRecalculateBy_CheckedChanged(object sender, EventArgs e)
-        {
-            cbRecalculateField.Enabled = !rbRecalculateByRecipeTotal.Checked;
-
-            if (rbRecalculateByIngredient.Checked)
-            {
-                CbRecalculateFieldDataBindIngredients();
-                return;
-            }
-            else if (rbRecalculateBySubRecipe.Checked)
-            {
-                CbRecalculateFieldDataBindSubRecipes();
-                return;
-            }
-
-            cbRecalculateField.DataSource = null;
         }
 
         private void BtnRecalculateRecipe_Click(object sender, EventArgs e)
@@ -243,6 +225,56 @@ namespace RecetarioWinformsUI.Recipes
                 MdiParent = this.MdiParent
             };
             viewSubRecipeForm.Show();
+        }
+
+        private void RbFiltersChanged(object sender, EventArgs e)
+        {
+            cbRecalculateField.Enabled = !rbRecalculateByRecipeTotal.Checked;
+
+            if (rbRecalculateByCost.Checked)
+            {
+                if (rbRecalculateByRecipeTotal.Checked)
+                {
+                    label9.Text = "Costo Receta($)";
+                    cbRecalculateField.DataSource = null;
+                }
+                else if (rbRecalculateByIngredient.Checked)
+                {
+                    label9.Text = "Costo Ingrediente($)";
+                    label1.Text = "Ingrediente";
+                    CbRecalculateFieldDataBindIngredients();
+                }
+                else if (rbRecalculateBySubRecipe.Checked)
+                {
+                    label9.Text = "Costo Subreceta($)";
+                    label1.Text = "SubReceta";
+                    CbRecalculateFieldDataBindSubRecipes();
+                }
+            }
+            else if(rbRecalculateByWeight.Checked)
+            {
+                if(rbRecalculateByRecipeTotal.Checked)
+                {
+                    label9.Text = $"Peso de Receta({SelectedRecipe.UnitName})";
+                    cbRecalculateField.DataSource = null;
+                }
+                else if(rbRecalculateByIngredient.Checked)
+                {
+                    var selectedIngredient = cbRecalculateField.SelectedValue != null ? $"({SelectedRecipe?.Ingredients.First(p => p.Id == (long)cbRecalculateField.SelectedValue).Ingredient.UnitName})" : string.Empty;
+
+                    label9.Text = $"Peso de Ingrediente{selectedIngredient}";
+                    label1.Text = "Ingrediente";
+                    CbRecalculateFieldDataBindIngredients();
+                }
+                else if(rbRecalculateBySubRecipe.Checked)
+                {
+                    var selectedSubRecipe = cbRecalculateField.SelectedValue != null ? $"({SelectedRecipe?.SubRecipes.FirstOrDefault(p => p.Id == (long)cbRecalculateField.SelectedValue)?.SubRecipe?.UnitName})" : string.Empty;
+
+                    label9.Text = $"Peso de Subreceta{selectedSubRecipe}";
+                    label1.Text = "SubReceta";
+                    CbRecalculateFieldDataBindSubRecipes();
+                }
+            }
         }
     }
 }

@@ -288,5 +288,10 @@ namespace RecetarioWinformsUI.Recipes
                 Efficiency = ingredient.Efficiency
             };
         }
+
+        private void UpdateRecipe_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

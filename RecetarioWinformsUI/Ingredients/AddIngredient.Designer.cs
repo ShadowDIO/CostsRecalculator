@@ -46,6 +46,7 @@
             btnAddIngredient = new Button();
             btnCancel = new Button();
             btnAddAndContinue = new Button();
+            label13 = new Label();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)txtAmountSoldBy).BeginInit();
             ((System.ComponentModel.ISupportInitialize)txtEfficiency).BeginInit();
@@ -55,6 +56,7 @@
             // groupBox1
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(label13);
             groupBox1.Controls.Add(label7);
             groupBox1.Controls.Add(txtAmountSoldBy);
             groupBox1.Controls.Add(txtProvider);
@@ -62,8 +64,8 @@
             groupBox1.Controls.Add(cbUnits);
             groupBox1.Controls.Add(txtCost);
             groupBox1.Controls.Add(txtIngredientName);
-            groupBox1.Controls.Add(label6);
             groupBox1.Controls.Add(label5);
+            groupBox1.Controls.Add(label6);
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label2);
@@ -84,6 +86,7 @@
             // 
             // txtAmountSoldBy
             // 
+            txtAmountSoldBy.DecimalPlaces = 2;
             txtAmountSoldBy.Location = new Point(131, 109);
             txtAmountSoldBy.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
             txtAmountSoldBy.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -102,12 +105,12 @@
             // 
             // txtEfficiency
             // 
-            txtEfficiency.Location = new Point(228, 109);
+            txtEfficiency.Location = new Point(325, 109);
             txtEfficiency.Maximum = new decimal(new int[] { 500, 0, 0, 0 });
             txtEfficiency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             txtEfficiency.Name = "txtEfficiency";
-            txtEfficiency.Size = new Size(91, 23);
-            txtEfficiency.TabIndex = 4;
+            txtEfficiency.Size = new Size(76, 23);
+            txtEfficiency.TabIndex = 5;
             txtEfficiency.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
             // cbUnits
@@ -115,15 +118,15 @@
             cbUnits.DisplayMember = "Abbreviation";
             cbUnits.DropDownStyle = ComboBoxStyle.DropDownList;
             cbUnits.FormattingEnabled = true;
-            cbUnits.Location = new Point(325, 109);
+            cbUnits.Location = new Point(228, 109);
             cbUnits.Name = "cbUnits";
             cbUnits.Size = new Size(92, 23);
-            cbUnits.TabIndex = 5;
+            cbUnits.TabIndex = 4;
             cbUnits.ValueMember = "Id";
             // 
             // txtCost
             // 
-            txtCost.DecimalPlaces = 4;
+            txtCost.DecimalPlaces = 2;
             txtCost.Location = new Point(23, 110);
             txtCost.Maximum = new decimal(new int[] { 1215752191, 23, 0, 0 });
             txtCost.Name = "txtCost";
@@ -152,7 +155,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(228, 92);
+            label5.Location = new Point(325, 92);
             label5.Name = "label5";
             label5.Size = new Size(75, 15);
             label5.TabIndex = 3;
@@ -161,7 +164,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(325, 92);
+            label4.Location = new Point(228, 92);
             label4.Name = "label4";
             label4.Size = new Size(45, 15);
             label4.TabIndex = 2;
@@ -188,7 +191,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Font = new Font("Segoe UI", 15.75F);
             label1.Location = new Point(12, 30);
             label1.Name = "label1";
             label1.Size = new Size(199, 30);
@@ -215,6 +218,7 @@
             btnCancel.TabIndex = 9;
             btnCancel.Text = "&Cancelar";
             btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += BtnCancel_Click;
             // 
             // btnAddAndContinue
             // 
@@ -226,6 +230,15 @@
             btnAddAndContinue.Text = "Agregar y Crear &Otro";
             btnAddAndContinue.UseVisualStyleBackColor = true;
             btnAddAndContinue.Click += BtnAddAndContinue_Click;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(400, 112);
+            label13.Name = "label13";
+            label13.Size = new Size(17, 15);
+            label13.TabIndex = 19;
+            label13.Text = "%";
             // 
             // AddIngredient
             // 
@@ -273,5 +286,6 @@
         private RichTextBox txtProvider;
         private Label label7;
         private NumericUpDown txtAmountSoldBy;
+        private Label label13;
     }
 }
