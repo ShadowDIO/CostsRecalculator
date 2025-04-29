@@ -12,6 +12,10 @@ namespace RecetarioWinformsUI.Units
         {
             InitializeComponent();
             UnitsBLL = unitsBLL;
+
+            // Habilita SelectAll en txtName y txtAbbreviation
+            AttachSelectAllBehavior(this);
+
             txtName.Select();
         }
 
@@ -19,12 +23,16 @@ namespace RecetarioWinformsUI.Units
         {
             if (!ValidateUnitUIFields())
             {
-                MessageBox.Show("Nombre y abreviación son campos requeridos.", "Campos requeridos", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(
+                    "Nombre y abreviación son campos requeridos.",
+                    "Campos requeridos",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation
+                );
                 return;
             }
 
             AddUnit();
-
             GlobalUIEvents.Instance.DispatchOnUnitAdded(sender, e);
             Close();
         }
@@ -33,15 +41,23 @@ namespace RecetarioWinformsUI.Units
         {
             if (!ValidateUnitUIFields())
             {
-                MessageBox.Show("Nombre y abreviación son campos requeridos.", "Campos requeridos", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(
+                    "Nombre y abreviación son campos requeridos.",
+                    "Campos requeridos",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation
+                );
                 return;
             }
 
             AddUnit();
-
             GlobalUIEvents.Instance.DispatchOnUnitAdded(sender, e);
-
-            MessageBox.Show("Unidad agregada exitosamente.", "Éxito!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(
+                "Unidad agregada exitosamente.",
+                "Éxito!",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
             CleanFields();
             txtName.Select();
         }
@@ -55,10 +71,9 @@ namespace RecetarioWinformsUI.Units
         {
             var unitDTO = new UnitDTO
             {
-                Name = txtName.Text,
-                Abbreviation = txtAbbreviation.Text
+                Name = txtName.Text.Trim(),
+                Abbreviation = txtAbbreviation.Text.Trim()
             };
-
             UnitsBLL.CreateUnit(unitDTO);
         }
 
@@ -70,8 +85,39 @@ namespace RecetarioWinformsUI.Units
 
         private bool ValidateUnitUIFields()
         {
-            var validationResultsFailed = !string.IsNullOrEmpty(txtAbbreviation.Text.Trim() + txtName.Text.Trim());
-            return validationResultsFailed;
+            // Ambos campos deben tener al menos un carácter
+            return
+                !string.IsNullOrWhiteSpace(txtName.Text) &&
+                !string.IsNullOrWhiteSpace(txtAbbreviation.Text);
+        }
+
+        /// <summary>
+        /// Recorre recursivamente todos los controles hijos y suscribe
+        /// Enter y MouseClick para hacer SelectAll() en TextBoxBase.
+        /// </summary>
+        private void AttachSelectAllBehavior(Control parent)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c is TextBoxBase tb)
+                {
+                    tb.Enter += (s, e) => tb.SelectAll();
+                    tb.MouseClick += (s, e) => tb.SelectAll();
+                }
+                // Si hubiera NumericUpDown en esta forma:
+                else if (c is NumericUpDown nud)
+                {
+                    var inner = nud.Controls.OfType<TextBox>().FirstOrDefault();
+                    if (inner != null)
+                    {
+                        inner.Enter += (s, e) => inner.SelectAll();
+                        inner.MouseClick += (s, e) => inner.SelectAll();
+                    }
+                }
+
+                if (c.HasChildren)
+                    AttachSelectAllBehavior(c);
+            }
         }
     }
 }

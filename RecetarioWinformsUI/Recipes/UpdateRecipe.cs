@@ -1,8 +1,8 @@
-﻿using RecetarioBackEnd.BLL.Interfaces;
+﻿using System.ComponentModel;
+using RecetarioBackEnd.BLL.Interfaces;
 using RecetarioBackEnd.DTO;
 using RecetarioBackEnd.Models;
 using RecetarioWinformsUI.Events;
-using System.ComponentModel;
 
 namespace RecetarioWinformsUI.Recipes
 {
@@ -30,6 +30,8 @@ namespace RecetarioWinformsUI.Recipes
         )
         {
             InitializeComponent();
+            // Habilita SelectAll en todos los controles de entrada
+            AttachSelectAllBehavior(this);
 
             RecipesBLL = recipesBLL;
             UnitsBLL = unitsBLL;
@@ -101,16 +103,19 @@ namespace RecetarioWinformsUI.Recipes
 
         private void GvIngredientsDataBind()
         {
-            gvRecipeIngredients.DataSource = Ingredients.Select(i => new
-            {
-                RelationId = i.Id,
-                i.Ingredient.Id,
-                IngredientName = i.Ingredient.IngredientName,
-                IngredientQuantity = i.Quantity,
-                IngredientUnit = i.Ingredient.UnitName,
-                IngredientEfficiency = i.Efficiency.ToString("P"),
-                IngredientCost = ((i.Ingredient.Cost / i.Ingredient.AmountSoldBy) * i.Quantity).ToString("C2")
-            }).ToList();
+            gvRecipeIngredients.DataSource = Ingredients
+                .Select(i => new
+                {
+                    RelationId = i.Id,
+                    Id = i.Ingredient.Id,
+                    IngredientName = i.Ingredient.IngredientName,
+                    IngredientQuantity = i.Quantity,
+                    IngredientUnit = i.Ingredient.UnitName,
+                    IngredientEfficiency = i.Efficiency.ToString("P"),
+                    IngredientCost = ((i.Ingredient.Cost / i.Ingredient.AmountSoldBy) * i.Quantity)
+                                            .ToString("C2")
+                })
+                .ToList();
 
             if (gvRecipeIngredients.Columns["RelationId"] != null)
                 gvRecipeIngredients.Columns["RelationId"].Visible = false;
@@ -122,18 +127,20 @@ namespace RecetarioWinformsUI.Recipes
 
         private void GvSubRecipesDataBind()
         {
-            gvSubRecipe.DataSource = SubRecipes.Select(s => new
-            {
-                RelationId = s.Id,
-                SubRecipeId = s.SubRecipeId,
-                SubRecipeName = s.SubRecipe.RecipeName,
-                SubRecipeQuantity = s.Quantity,
-                SubRecipeUnit = s.SubRecipe.UnitName,
-                SubRecipeEfficiency = s.Efficiency.ToString("P"),
-                SubRecipeCost = RecipesBLL.CalculateRecipeCosts(s.SubRecipe).ToString("C2")
-            }).ToList();
+            gvSubRecipe.DataSource = SubRecipes
+                .Select(s => new
+                {
+                    RelationId = s.Id,
+                    SubRecipeId = s.SubRecipeId,
+                    SubRecipeName = s.SubRecipe.RecipeName,
+                    SubRecipeQuantity = s.Quantity,
+                    SubRecipeUnit = s.SubRecipe.UnitName,
+                    SubRecipeEfficiency = s.Efficiency.ToString("P"),
+                    SubRecipeCost = RecipesBLL.CalculateRecipeCosts(s.SubRecipe)
+                                          .ToString("C2")
+                })
+                .ToList();
 
-            // Ocultar las columnas auxiliares
             if (gvSubRecipe.Columns["RelationId"] != null)
                 gvSubRecipe.Columns["RelationId"].Visible = false;
             if (gvSubRecipe.Columns["SubRecipeId"] != null)
@@ -142,13 +149,14 @@ namespace RecetarioWinformsUI.Recipes
             gvSubRecipe.Refresh();
         }
 
-
         private void RecalculateCosts()
         {
-            var ingrCost = Ingredients.Sum(i => (i.Ingredient.Cost / i.Ingredient.AmountSoldBy) * i.Quantity);
+            var ingrCost = Ingredients
+                .Sum(i => (i.Ingredient.Cost / i.Ingredient.AmountSoldBy) * i.Quantity);
             txtIngredientCosts.Text = ingrCost.ToString("C2");
 
-            var subCost = SubRecipes.Sum(s => RecipesBLL.CalculateRecipeCosts(s.SubRecipe));
+            var subCost = SubRecipes
+                .Sum(s => RecipesBLL.CalculateRecipeCosts(s.SubRecipe));
             txtSubRecipesCost.Text = subCost.ToString("C2");
 
             txtCost.Text = $"{ingrCost + subCost:C2}";
@@ -158,19 +166,22 @@ namespace RecetarioWinformsUI.Recipes
         {
             if (string.IsNullOrWhiteSpace(txtRecipeName.Text))
             {
-                MessageBox.Show("El nombre no puede ir vacío.", "Campo requerido", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("El nombre no puede ir vacío.", "Campo requerido",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 txtRecipeName.Focus();
                 return false;
             }
             if (cbUnits.SelectedValue == null)
             {
-                MessageBox.Show("Seleccione una unidad.", "Campo requerido", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Seleccione una unidad.", "Campo requerido",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 cbUnits.Focus();
                 return false;
             }
             if (!Ingredients.Any() && !SubRecipes.Any())
             {
-                MessageBox.Show("Agregue al menos un ingrediente o subreceta.", "Campo requerido", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Agregue al menos un ingrediente o subreceta.", "Campo requerido",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
             }
             return true;
@@ -191,11 +202,11 @@ namespace RecetarioWinformsUI.Recipes
             Recipe.UnitId = Convert.ToInt32(cbUnits.SelectedValue);
             RecipesBLL.UpdateRecipe(Recipe);
 
-            // 2) Carga relaciones de BD
+            // 2) Sincroniza relaciones
             var dbIngredients = RecipesBLL.GetRecipeIngredients((int)Recipe.Id).ToList();
             var dbSubRecipes = RecipesBLL.GetRecipeSubRecipes((int)Recipe.Id).ToList();
 
-            // 3) Sincroniza Ingredientes
+            // Ingredientes
             var toDeleteIngr = dbIngredients.Where(db => !Ingredients.Any(i => i.Id == db.Id)).ToList();
             var toAddIngr = Ingredients.Where(i => !dbIngredients.Any(db => db.Id == i.Id)).ToList();
 
@@ -212,7 +223,7 @@ namespace RecetarioWinformsUI.Recipes
                 });
             });
 
-            // 4) Sincroniza SubRecetas
+            // SubRecetas
             var toDeleteSub = dbSubRecipes.Where(db => !SubRecipes.Any(s => s.Id == db.Id)).ToList();
             var toAddSub = SubRecipes.Where(s => !dbSubRecipes.Any(db => db.Id == s.Id)).ToList();
 
@@ -229,9 +240,9 @@ namespace RecetarioWinformsUI.Recipes
                 });
             });
 
-            // 5) Notifica y cierra
             GlobalUIEvents.Instance.DispatchOnRecipeUpdated(this, EventArgs.Empty);
-            MessageBox.Show("Receta actualizada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Receta actualizada correctamente.", "Éxito",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
             Close();
         }
 
@@ -251,7 +262,6 @@ namespace RecetarioWinformsUI.Recipes
 
         private void OnIngredientSelected(object sender, IngredientSelectedEventArgs e)
         {
-            // 1) Evitar duplicados
             if (Ingredients.Any(x => x.Ingredient.Id == e.RecipeIngredientSelected.Ingredient.Id))
             {
                 MessageBox.Show("Este ingrediente ya ha sido agregado.", "Ingrediente duplicado",
@@ -259,14 +269,9 @@ namespace RecetarioWinformsUI.Recipes
                 return;
             }
 
-            // 2) Mapear correctamente el RecipeIngredient a DTO con todos los datos
-            //    Usamos tu método MapToDTO que sí rellena nombre, unidad, costo, AmountSoldBy, etc.
             var newDto = MapToDTO(e.RecipeIngredientSelected);
-
-            // 3) Fijar el RecipeId de la receta que estamos editando
             newDto.RecipeId = Recipe!.Id;
 
-            // 4) Agregar a la lista y volver a bindear
             Ingredients.Add(newDto);
             GvIngredientsDataBind();
             RecalculateCosts();
@@ -294,9 +299,6 @@ namespace RecetarioWinformsUI.Recipes
                 Efficiency = ingredient.Efficiency
             };
         }
-
-
-
 
         private void GvRecipeIngredients_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -357,5 +359,33 @@ namespace RecetarioWinformsUI.Recipes
         }
 
         #endregion
+
+        /// <summary>
+        /// Recorre recursivamente todos los controles hijos y suscribe Enter y MouseClick
+        /// para hacer SelectAll() en TextBoxBase y NumericUpDown.
+        /// </summary>
+        private void AttachSelectAllBehavior(Control parent)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c is TextBoxBase tb)
+                {
+                    tb.Enter += (s, e) => tb.SelectAll();
+                    tb.MouseClick += (s, e) => tb.SelectAll();
+                }
+                else if (c is NumericUpDown nud)
+                {
+                    var inner = nud.Controls.OfType<TextBox>().FirstOrDefault();
+                    if (inner != null)
+                    {
+                        inner.Enter += (s, e) => inner.SelectAll();
+                        inner.MouseClick += (s, e) => inner.SelectAll();
+                    }
+                }
+
+                if (c.HasChildren)
+                    AttachSelectAllBehavior(c);
+            }
+        }
     }
 }

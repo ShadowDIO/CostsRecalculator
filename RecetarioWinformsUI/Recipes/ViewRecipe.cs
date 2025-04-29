@@ -1,7 +1,7 @@
-﻿using RecetarioBackEnd.BLL.Interfaces;
+﻿using System.Data;
+using RecetarioBackEnd.BLL.Interfaces;
 using RecetarioBackEnd.DTO;
 using RecetarioWinformsUI.Helpers;
-using System.Data;
 
 namespace RecetarioWinformsUI.Recipes
 {
@@ -14,6 +14,9 @@ namespace RecetarioWinformsUI.Recipes
         public ViewRecipe(int recipeId, IRecipesBLL recipesBLL)
         {
             InitializeComponent();
+            // Habilita SelectAll en todos los controles de entrada
+            AttachSelectAllBehavior(this);
+
             RecipesBLL = recipesBLL;
             CbMarginDataBind();
             LoadSelectedRecipeDataSource(recipeId);
@@ -23,6 +26,9 @@ namespace RecetarioWinformsUI.Recipes
         public ViewRecipe(int recipeId, RecipeRecalculateParametersDTO recalculateParameters, IRecipesBLL recipesBLL)
         {
             InitializeComponent();
+            // Habilita SelectAll en todos los controles de entrada
+            AttachSelectAllBehavior(this);
+
             RecalculateParameters = recalculateParameters;
             RecipesBLL = recipesBLL;
             CbMarginDataBind();
@@ -34,17 +40,15 @@ namespace RecetarioWinformsUI.Recipes
         private void LoadSelectedRecipeDataSource(int recipeId)
         {
             if (RecalculateParameters == null)
-            {
                 SelectedRecipe = RecipesBLL.GetRecipe(recipeId);
-            }
             else
-            {
                 SelectedRecipe = RecipesBLL.RecalculateRecipe(recipeId, RecalculateParameters);
-            }
         }
 
         private void LoadRecipeUI()
         {
+            if (SelectedRecipe == null) return;
+
             lblRecipeName.Text = $"{SelectedRecipe.RecipeName} para {SelectedRecipe.AmountProduced} {SelectedRecipe.UnitName}";
             txtRecipeName.Text = SelectedRecipe.RecipeName;
             txtAmount.Value = Convert.ToDecimal(SelectedRecipe.AmountProduced);
@@ -81,77 +85,42 @@ namespace RecetarioWinformsUI.Recipes
             CalculateUtilityMargin();
         }
 
-        private void LoadRecalculateFieldParameters(RecipeRecalculateParametersDTO recalculateParameters)
+        private void LoadRecalculateFieldParameters(RecipeRecalculateParametersDTO recalc)
         {
-            switch (recalculateParameters.RecalculateType)
+            switch (recalc.RecalculateType)
             {
                 case RecetarioBackEnd.Enums.RecalculateTypeEnum.Weight:
-                    rbRecalculateByWeight.Checked = true;
-                    break;
+                    rbRecalculateByWeight.Checked = true; break;
                 case RecetarioBackEnd.Enums.RecalculateTypeEnum.Cost:
                 default:
-                    rbRecalculateByCost.Checked = true;
-                    break;
+                    rbRecalculateByCost.Checked = true; break;
             }
 
-            switch (recalculateParameters.RecalculateOverField)
+            switch (recalc.RecalculateOverField)
             {
                 case RecetarioBackEnd.Enums.RecalculateOverFieldEnum.Ingredient:
-                    rbRecalculateByIngredient.Checked = true;
-                    break;
+                    rbRecalculateByIngredient.Checked = true; break;
                 case RecetarioBackEnd.Enums.RecalculateOverFieldEnum.SubRecipe:
-                    rbRecalculateBySubRecipe.Checked = true;
-                    break;
+                    rbRecalculateBySubRecipe.Checked = true; break;
                 case RecetarioBackEnd.Enums.RecalculateOverFieldEnum.Total:
                 default:
-                    rbRecalculateByRecipeTotal.Checked = true;
-                    break;
+                    rbRecalculateByRecipeTotal.Checked = true; break;
             }
 
-            txtRecalculateValue.Value = Convert.ToDecimal(recalculateParameters.RecalculateValue);
-            cbRecalculateField.SelectedValue = recalculateParameters.RecalculateFieldId;
+            txtRecalculateValue.Value = Convert.ToDecimal(recalc.RecalculateValue);
+            cbRecalculateField.SelectedValue = recalc.RecalculateFieldId;
         }
 
         private void CbMarginDataBind()
         {
-            var valuesCollection = new Dictionary<int, string>();
-            for (var i = 28; i < 33; i++)
-            {
-                valuesCollection.Add(i, (i / 100d).ToString("P"));
-            }
+            var values = new Dictionary<int, string>();
+            for (int i = 28; i < 33; i++)
+                values[i] = (i / 100d).ToString("P");
 
             cbMarginEarnings.DisplayMember = "Value";
             cbMarginEarnings.ValueMember = "Key";
-            cbMarginEarnings.DataSource = new BindingSource(valuesCollection, null);
+            cbMarginEarnings.DataSource = new BindingSource(values, null);
             cbMarginEarnings.Update();
-        }
-
-        private void CbRecalculateFieldDataBindIngredients()
-        {
-            var availableFields = SelectedRecipe.Ingredients.Select(p =>
-            new
-            {
-                Id = p.Ingredient.Id,
-                Value = p.Ingredient.IngredientName
-            }).ToList();
-
-            cbRecalculateField.DataSource = availableFields;
-            cbRecalculateField.Update();
-        }
-
-        private void CbRecalculateFieldDataBindSubRecipes()
-        {
-            var availableFields = SelectedRecipe.SubRecipes
-                .Where(p => p.SubRecipe != null && !string.IsNullOrEmpty(p.SubRecipe?.RecipeName))
-                .Select(p =>
-                new
-                {
-                    Id = p.SubRecipe.Id,
-                    Value = p.SubRecipe.RecipeName
-                }).ToList();
-
-            cbRecalculateField.DataSource = availableFields;
-            cbRecalculateField.Update();
         }
 
         private void CalculateUtilityMargin()
@@ -159,10 +128,9 @@ namespace RecetarioWinformsUI.Recipes
             if (cbMarginEarnings.SelectedValue == null || string.IsNullOrEmpty(txtCost.Text))
                 return;
 
-            var recipeMarginPercentage = ((int)cbMarginEarnings.SelectedValue) / 100f;
-            var utilityMargin = Single.Parse(txtCost.Text, System.Globalization.NumberStyles.Currency) / recipeMarginPercentage;
-
-            txtSuggestedPrice.Text = utilityMargin.ToString("C2");
+            float pct = ((int)cbMarginEarnings.SelectedValue) / 100f;
+            float cost = float.Parse(txtCost.Text, System.Globalization.NumberStyles.Currency);
+            txtSuggestedPrice.Text = (cost / pct).ToString("C2");
         }
 
         private void RbRecalculateBy_CheckedChanged(object sender, EventArgs e)
@@ -170,79 +138,115 @@ namespace RecetarioWinformsUI.Recipes
             cbRecalculateField.Enabled = !rbRecalculateByRecipeTotal.Checked;
 
             if (rbRecalculateByIngredient.Checked)
-            {
                 CbRecalculateFieldDataBindIngredients();
-                return;
-            }
             else if (rbRecalculateBySubRecipe.Checked)
-            {
                 CbRecalculateFieldDataBindSubRecipes();
-                return;
-            }
+            else
+                cbRecalculateField.DataSource = null;
+        }
 
-            cbRecalculateField.DataSource = null;
+        private void CbRecalculateFieldDataBindIngredients()
+        {
+            cbRecalculateField.DataSource = SelectedRecipe?.Ingredients
+                .Select(p => new { Id = p.Ingredient.Id, Value = p.Ingredient.IngredientName })
+                .ToList();
+            cbRecalculateField.Update();
+        }
+
+        private void CbRecalculateFieldDataBindSubRecipes()
+        {
+            cbRecalculateField.DataSource = SelectedRecipe?.SubRecipes
+                .Where(p => p.SubRecipe != null && !string.IsNullOrEmpty(p.SubRecipe.RecipeName))
+                .Select(p => new { Id = p.SubRecipe.Id, Value = p.SubRecipe.RecipeName })
+                .ToList();
+            cbRecalculateField.Update();
         }
 
         private void BtnRecalculateRecipe_Click(object sender, EventArgs e)
         {
-            var recalculateParameters = new RecipeRecalculateParametersDTO
+            if (SelectedRecipe == null) return;
+
+            var recalc = new RecipeRecalculateParametersDTO
             {
                 RecalculateValue = Convert.ToDouble(txtRecalculateValue.Value),
-                RecalculateType = rbRecalculateByCost.Checked ? RecetarioBackEnd.Enums.RecalculateTypeEnum.Cost : RecetarioBackEnd.Enums.RecalculateTypeEnum.Weight,
+                RecalculateType = rbRecalculateByCost.Checked
+                                      ? RecetarioBackEnd.Enums.RecalculateTypeEnum.Cost
+                                      : RecetarioBackEnd.Enums.RecalculateTypeEnum.Weight,
                 RecalculateOverField = rbRecalculateByRecipeTotal.Checked
-                    ? RecetarioBackEnd.Enums.RecalculateOverFieldEnum.Total
-                    : (rbRecalculateByIngredient.Checked ? RecetarioBackEnd.Enums.RecalculateOverFieldEnum.Ingredient : RecetarioBackEnd.Enums.RecalculateOverFieldEnum.SubRecipe),
-                RecalculateFieldId = cbRecalculateField.SelectedValue == null ? -1 : (int)cbRecalculateField.SelectedValue
+                                      ? RecetarioBackEnd.Enums.RecalculateOverFieldEnum.Total
+                                      : rbRecalculateByIngredient.Checked
+                                        ? RecetarioBackEnd.Enums.RecalculateOverFieldEnum.Ingredient
+                                        : RecetarioBackEnd.Enums.RecalculateOverFieldEnum.SubRecipe,
+                RecalculateFieldId = cbRecalculateField.SelectedValue == null
+                                      ? -1
+                                      : (int)cbRecalculateField.SelectedValue
             };
 
-            var viewSubRecipeForm = new ViewRecipe((int)SelectedRecipe.Id, recalculateParameters, RecipesBLL)
+            var form = new ViewRecipe((int)SelectedRecipe.Id, recalc, RecipesBLL)
             {
                 MdiParent = this.MdiParent
             };
-            viewSubRecipeForm.Show();
+            form.Show();
         }
 
-        private void BtnClose_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void CbMarginEarnings_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            CalculateUtilityMargin();
-        }
+        private void BtnClose_Click(object sender, EventArgs e) => Close();
+        private void CbMarginEarnings_SelectedIndexChanged(object sender, EventArgs e) => CalculateUtilityMargin();
 
         private void GvSubRecipes_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (gvSubRecipes.Columns[e.ColumnIndex] is DataGridViewButtonColumn && e.RowIndex >= 0)
+            if (e.RowIndex < 0) return;
+            if (gvSubRecipes.Columns[e.ColumnIndex] is DataGridViewButtonColumn btn
+                && btn.Name == "btnViewRecipeSubRecipeView")
             {
-                if (((DataGridViewButtonColumn)gvSubRecipes.Columns[e.ColumnIndex]).Name == "btnViewRecipeSubRecipeView")
-                {
-                    var recipeId = gvSubRecipes.Rows[e.RowIndex].Cells["SubRecipeId"].Value as long?;
-                    if (recipeId.HasValue)
-                    {
-                        OpenSubRecipeView((int)recipeId.Value);
-                    }
-                }
+                var id = gvSubRecipes.Rows[e.RowIndex]
+                                   .Cells["SubRecipeId"].Value as long?;
+                if (id.HasValue) OpenSubRecipeView((int)id.Value);
             }
         }
 
         private void GvSubRecipes_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            var recipeId = gvSubRecipes.Rows[e.RowIndex].Cells["SubRecipeId"].Value as long?;
-            if (recipeId.HasValue)
-            {
-                OpenSubRecipeView((int)recipeId.Value);
-            }
+            if (e.RowIndex < 0) return;
+            var id = gvSubRecipes.Rows[e.RowIndex]
+                               .Cells["SubRecipeId"].Value as long?;
+            if (id.HasValue) OpenSubRecipeView((int)id.Value);
         }
 
         private void OpenSubRecipeView(int subRecipeId)
         {
-            var viewSubRecipeForm = new ViewRecipe(subRecipeId, RecipesBLL)
+            var frm = new ViewRecipe(subRecipeId, RecipesBLL)
             {
                 MdiParent = this.MdiParent
             };
-            viewSubRecipeForm.Show();
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Recorre recursivamente todos los controles hijos y suscribe Enter y MouseClick
+        /// para hacer SelectAll() en TextBoxBase y NumericUpDown.
+        /// </summary>
+        private void AttachSelectAllBehavior(Control parent)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c is TextBoxBase tb)
+                {
+                    tb.Enter += (s, e) => tb.SelectAll();
+                    tb.MouseClick += (s, e) => tb.SelectAll();
+                }
+                else if (c is NumericUpDown nud)
+                {
+                    var inner = nud.Controls.OfType<TextBox>().FirstOrDefault();
+                    if (inner != null)
+                    {
+                        inner.Enter += (s, e) => inner.SelectAll();
+                        inner.MouseClick += (s, e) => inner.SelectAll();
+                    }
+                }
+
+                if (c.HasChildren)
+                    AttachSelectAllBehavior(c);
+            }
         }
     }
 }

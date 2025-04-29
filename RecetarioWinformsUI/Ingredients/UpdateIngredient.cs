@@ -14,13 +14,14 @@ namespace RecetarioWinformsUI.Ingredients
         {
             InitializeComponent();
 
+            // Habilita SelectAll en todos los controles de entrada
+            AttachSelectAllBehavior(this);
+
             IngredientsBLL = ingredientsBLL;
-            this.UnitsBLL = unitsBLL;
+            UnitsBLL = unitsBLL;
 
             LoadIngredient(ingredientId);
-
             CbUnitsDataBind();
-
             LoadUI();
 
             GlobalUIEvents.Instance.OnUnitAdded += OnUnitAdded;
@@ -45,7 +46,9 @@ namespace RecetarioWinformsUI.Ingredients
 
         private void CbUnitsDataBind()
         {
-            cbUnits.DataSource = UnitsBLL.GetAllUnits().Select(p => new { p.Id, p.Abbreviation }).ToList();
+            cbUnits.DataSource = UnitsBLL.GetAllUnits()
+                                 .Select(p => new { p.Id, p.Abbreviation })
+                                 .ToList();
             cbUnits.Update();
         }
 
@@ -61,18 +64,18 @@ namespace RecetarioWinformsUI.Ingredients
 
         private bool ValidateUI()
         {
-            if (string.IsNullOrEmpty(txtIngredientName.Text.Trim()))
+            if (string.IsNullOrWhiteSpace(txtIngredientName.Text))
             {
-                MessageBox.Show("El campo Nombre no puede estar vacío.", "Campo requerido.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("El campo Nombre no puede estar vacío.", "Campo requerido.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
             }
-
-            if (string.IsNullOrEmpty(txtProvider.Text.Trim()))
+            if (string.IsNullOrWhiteSpace(txtProvider.Text))
             {
-                MessageBox.Show("El campo Proveedor no puede estar vacío.", "Campo requerido.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("El campo Proveedor no puede estar vacío.", "Campo requerido.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
             }
-
             return true;
         }
 
@@ -86,8 +89,7 @@ namespace RecetarioWinformsUI.Ingredients
             Ingredient.Provider = txtProvider.Text.Trim();
 
             IngredientsBLL.UpdateIngredient(Ingredient);
-
-            GlobalUIEvents.Instance.DispatchOnIngredientAdded(this, new EventArgs());
+            GlobalUIEvents.Instance.DispatchOnIngredientAdded(this, EventArgs.Empty);
         }
 
         private void BtnAddIngredient_Click(object sender, EventArgs e)
@@ -96,10 +98,35 @@ namespace RecetarioWinformsUI.Ingredients
                 return;
 
             SaveIngredient();
-
-            MessageBox.Show("Ingrediente actualizado exitosamente.", "Ingrediente.", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+            MessageBox.Show("Ingrediente actualizado exitosamente.", "Ingrediente.",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
             Close();
+        }
+
+        /// <summary>
+        /// Recorre recursivamente controles y suscribe Enter y MouseClick para SelectAll().
+        /// </summary>
+        private void AttachSelectAllBehavior(Control parent)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c is TextBoxBase tb)
+                {
+                    tb.Enter += (s, e) => tb.SelectAll();
+                    tb.MouseClick += (s, e) => tb.SelectAll();
+                }
+                else if (c is NumericUpDown nud)
+                {
+                    var inner = nud.Controls.OfType<TextBox>().FirstOrDefault();
+                    if (inner != null)
+                    {
+                        inner.Enter += (s, e) => inner.SelectAll();
+                        inner.MouseClick += (s, e) => inner.SelectAll();
+                    }
+                }
+                if (c.HasChildren)
+                    AttachSelectAllBehavior(c);
+            }
         }
     }
 }

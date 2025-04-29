@@ -1,8 +1,8 @@
-﻿using RecetarioBackEnd.BLL.Interfaces;
+﻿using System.Diagnostics;
+using RecetarioBackEnd.BLL.Interfaces;
 using RecetarioBackEnd.DTO;
 using RecetarioBackEnd.Models;
 using RecetarioWinformsUI.Events;
-using System.Diagnostics;
 
 namespace RecetarioWinformsUI.Recipes
 {
@@ -17,9 +17,17 @@ namespace RecetarioWinformsUI.Recipes
         private readonly IUnitsBLL UnitsBLL;
         private readonly IIngredientsBLL IngredientsBLL;
 
-        public AddRecipe(IRecipesBLL recipesBLL, IRecipeIngredientsBLL recipeIngredientsBLL, IRecipeSubRecipesBLL recipeSubRecipesBLL, IUnitsBLL unitsBLL, IIngredientsBLL ingredientsBLL)
+        public AddRecipe(
+            IRecipesBLL recipesBLL,
+            IRecipeIngredientsBLL recipeIngredientsBLL,
+            IRecipeSubRecipesBLL recipeSubRecipesBLL,
+            IUnitsBLL unitsBLL,
+            IIngredientsBLL ingredientsBLL)
         {
             InitializeComponent();
+
+            // Habilita SelectAll en todos los controles de entrada
+            AttachSelectAllBehavior(this);
 
             RecipesBLL = recipesBLL;
             RecipeIngredientsBLL = recipeIngredientsBLL;
@@ -69,18 +77,16 @@ namespace RecetarioWinformsUI.Recipes
 
         private void BtnAddIngredient_Click(object sender, EventArgs e)
         {
-            var frmSelectRecipeIngredient = new SelectRecipeIngredient(
+            var frm = new SelectRecipeIngredient(
                 Ingredients.Select(p => (int)p.Ingredient.Id),
-                IngredientsBLL // Pasar el BLL de ingredientes
+                IngredientsBLL
             );
-
-            frmSelectRecipeIngredient.OnIngredientSelected += OnIngredientSelected;
-            frmSelectRecipeIngredient.ShowDialog();
+            frm.OnIngredientSelected += OnIngredientSelected;
+            frm.ShowDialog();
         }
 
         private void OnIngredientSelected(object sender, IngredientSelectedEventArgs e)
         {
-   
             Ingredients.Add(e.RecipeIngredientSelected);
             GvIngredientsDataBind();
             RecalculateCosts();
@@ -88,17 +94,14 @@ namespace RecetarioWinformsUI.Recipes
 
         private void BtnAddSubRecipe_Click(object sender, EventArgs e)
         {
-
-            var frmSelectRecepeSubRecipe = new SelectRecipeSubRecipe(
+            var frm = new SelectRecipeSubRecipe(
                 SubRecipes.Select(p => (int)p.SubRecipeId),
                 RecipesBLL,
                 UnitsBLL
             );
-
-            frmSelectRecepeSubRecipe.OnSubRecipeSelected += OnSubRecipeSelected;
-            frmSelectRecepeSubRecipe.ShowDialog();
+            frm.OnSubRecipeSelected += OnSubRecipeSelected;
+            frm.ShowDialog();
         }
-
 
         private void OnSubRecipeSelected(object sender, SubRecipeSelectedEventArgs e)
         {
@@ -171,8 +174,6 @@ namespace RecetarioWinformsUI.Recipes
             Close();
         }
 
-
-
         private void TxtAmount_ValueChanged(object sender, EventArgs e)
         {
             RecalculateCosts();
@@ -187,25 +188,20 @@ namespace RecetarioWinformsUI.Recipes
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
-            if (gvRecipeIngredients.Columns[e.ColumnIndex] is DataGridViewButtonColumn btn
-                && btn.Name == "btnRemoveRecipeIngredient")
+            if (gvRecipeIngredients.Columns[e.ColumnIndex] is DataGridViewButtonColumn btn &&
+                btn.Name == "btnRemoveRecipeIngredient")
             {
                 if (MessageBox.Show(
                         "¿Seguro quiere remover este Ingrediente?",
                         "Remover Ingrediente",
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question
-                    ) != DialogResult.Yes)
-                {
-                    return;
-                }
+                    ) != DialogResult.Yes) return;
 
-                // Tomamos el ID *inmediatamente*...
                 var cell = gvRecipeIngredients.Rows[e.RowIndex].Cells["IngredientId"];
                 if (cell?.Value is not long id) return;
 
-                // Pero la eliminación y el rebind los hacemos después:
-                this.BeginInvoke((Action)(() =>
+                BeginInvoke((Action)(() =>
                 {
                     Ingredients.RemoveAll(x => x.IngredientId == id);
                     GvIngredientsDataBind();
@@ -214,22 +210,14 @@ namespace RecetarioWinformsUI.Recipes
             }
         }
 
-
         private void GvSubRecipe_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // 1) Filtrar clicks en encabezados o índices fuera de rango
             if (e.RowIndex < 0 || e.ColumnIndex < 0 ||
                 e.RowIndex >= gvSubRecipe.Rows.Count ||
-                e.ColumnIndex >= gvSubRecipe.Columns.Count)
-            {
-                return;
-            }
+                e.ColumnIndex >= gvSubRecipe.Columns.Count) return;
 
-            // 2) Solo reaccionar si es columna de botón
-            if (!(gvSubRecipe.Columns[e.ColumnIndex] is DataGridViewButtonColumn btnCol))
-                return;
+            if (!(gvSubRecipe.Columns[e.ColumnIndex] is DataGridViewButtonColumn btnCol)) return;
 
-            // 3) Botón Remover SubReceta
             if (btnCol.Name == "btnRemoveRecipeSubRecipe")
             {
                 if (MessageBox.Show(
@@ -237,30 +225,22 @@ namespace RecetarioWinformsUI.Recipes
                         "Remover SubReceta",
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question
-                    ) != DialogResult.Yes)
-                {
-                    return;
-                }
+                    ) != DialogResult.Yes) return;
 
-                // 4) Leer el ID de forma segura
                 var cell = gvSubRecipe.Rows[e.RowIndex].Cells["SubRecipeId"];
-                if (cell?.Value is not long idToRemove)
-                    return;
+                if (cell?.Value is not long idToRemove) return;
 
-                // 5) Deferir la eliminación y el rebindeo al final del ciclo de eventos
-                this.BeginInvoke((Action)(() =>
+                BeginInvoke((Action)(() =>
                 {
                     SubRecipes.RemoveAll(x => x.SubRecipeId == idToRemove);
                     GvSubRecipesDataBind();
                     RecalculateCosts();
                 }));
             }
-            // 6) Botón Ver SubReceta
             else if (btnCol.Name == "btnViewRecipeSubRecipeView")
             {
                 var cell = gvSubRecipe.Rows[e.RowIndex].Cells["SubRecipeId"];
-                if (cell?.Value is not long idToView)
-                    return;
+                if (cell?.Value is not long idToView) return;
 
                 try
                 {
@@ -273,22 +253,6 @@ namespace RecetarioWinformsUI.Recipes
                 }
             }
         }
-
-        // Método auxiliar para mostrar excepción con detalle
-        private void ShowError(string title, Exception ex)
-        {
-            // Puedes cambiar Debug.WriteLine por tu logger favorito
-            Debug.WriteLine($"[{title}] {ex.GetType().Name}: {ex.Message}");
-            Debug.WriteLine(ex.StackTrace);
-
-            MessageBox.Show(
-                $"{title}:\n\n{ex.GetType().Name}\n{ex.Message}",
-                "Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error
-            );
-        }
-
 
         private void GvSubRecipe_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -303,51 +267,54 @@ namespace RecetarioWinformsUI.Recipes
 
         private void CbUnitsDataBind()
         {
-            cbUnits.DataSource = UnitsBLL.GetAllUnits().Select(p => new { p.Id, p.Abbreviation }).ToList();
+            cbUnits.DataSource = UnitsBLL
+                .GetAllUnits()
+                .Select(p => new { p.Id, p.Abbreviation })
+                .ToList();
             cbUnits.Update();
         }
 
         private void GvIngredientsDataBind()
         {
             gvRecipeIngredients.DataSource = Ingredients
-                .Where(p => p.Ingredient != null) // Filtrar ingredientes que no sean null
+                .Where(p => p.Ingredient != null)
                 .Select(p => new
                 {
                     IngredientId = p.IngredientId,
-                    IngredientName = p.Ingredient?.IngredientName ?? "Sin Nombre", // Verificar si el nombre es null
+                    IngredientName = p.Ingredient?.IngredientName ?? "Sin Nombre",
                     IngredientQuantity = p.Quantity,
                     IngredientUnit = p.Ingredient?.UnitId != null
-                        ? UnitsBLL.GetUnit((int)p.Ingredient.UnitId)?.Abbreviation ?? "Sin Unidad"  // Consultar el nombre de la unidad usando UnitsBLL
-                        : "Sin Unidad", // Si UnitId es nulo
+                        ? UnitsBLL.GetUnit((int)p.Ingredient.UnitId)?.Abbreviation ?? "Sin Unidad"
+                        : "Sin Unidad",
                     IngredientEfficiency = p.Efficiency.ToString("P"),
-                    IngredientCost = (p.Ingredient != null && p.Ingredient.AmountSoldBy > 0) ?
-                        ((p.Ingredient.Cost / p.Ingredient.AmountSoldBy) * p.Quantity).ToString("C2") : "Costo no disponible"
-                }).ToList();
+                    IngredientCost = (p.Ingredient != null && p.Ingredient.AmountSoldBy > 0)
+                        ? ((p.Ingredient.Cost / p.Ingredient.AmountSoldBy) * p.Quantity).ToString("C2")
+                        : "Costo no disponible"
+                })
+                .ToList();
 
             gvRecipeIngredients.Refresh();
         }
 
-
-
         private void GvSubRecipesDataBind()
         {
             gvSubRecipe.DataSource = SubRecipes
-                .Where(p => p.SubRecipe != null) // Verificar que SubRecipe no sea null
+                .Where(p => p.SubRecipe != null)
                 .Select(p => new
                 {
                     SubRecipeId = p.SubRecipeId,
-                    SubRecipeName = p.SubRecipe?.RecipeName ?? "Sin Nombre", // Verificar si el nombre es null
+                    SubRecipeName = p.SubRecipe?.RecipeName ?? "Sin Nombre",
                     SubRecipeQuantity = p.Quantity,
-                    SubRecipeUnit = p.SubRecipe?.Unit?.Abbreviation ?? "Sin Unidad", // Verificar si la unidad es null
-                    SubRecipeEfficiency = p.SubRecipe?.Efficiency.ToString("P") ?? "Sin Eficiencia", // Verificar si la eficiencia es null
-                    SubRecipeCost = (p.SubRecipe != null) ?
-                        RecipesBLL.CalculateRecipeCosts(p.SubRecipeId).ToString("C2") : "Costo no disponible" // Verificar si SubRecipe es null antes de calcular el costo
-                }).ToList();
+                    SubRecipeUnit = p.SubRecipe?.Unit?.Abbreviation ?? "Sin Unidad",
+                    SubRecipeEfficiency = p.SubRecipe?.Efficiency.ToString("P") ?? "Sin Eficiencia",
+                    SubRecipeCost = p.SubRecipe != null
+                        ? RecipesBLL.CalculateRecipeCosts(p.SubRecipeId).ToString("C2")
+                        : "Costo no disponible"
+                })
+                .ToList();
 
             gvSubRecipe.Refresh();
         }
-
-
 
         private void RecalculateCosts()
         {
@@ -362,7 +329,7 @@ namespace RecetarioWinformsUI.Recipes
 
         private bool ValidateRecipe()
         {
-            if (string.IsNullOrEmpty(txtRecipeName.Text.Trim()))
+            if (string.IsNullOrWhiteSpace(txtRecipeName.Text))
             {
                 MessageBox.Show("El nombre de la receta no puede estar vacío.", "Campo requerido.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 txtRecipeName.Select();
@@ -383,6 +350,46 @@ namespace RecetarioWinformsUI.Recipes
             }
 
             return true;
+        }
+
+        // Método auxiliar para mostrar excepción con detalle
+        private void ShowError(string title, Exception ex)
+        {
+            Debug.WriteLine($"[{title}] {ex.GetType().Name}: {ex.Message}");
+            Debug.WriteLine(ex.StackTrace);
+
+            MessageBox.Show(
+                $"{title}:\n\n{ex.GetType().Name}\n{ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+        }
+
+        /// <summary>
+        /// Recorre recursivamente controles y suscribe Enter y MouseClick para SelectAll().
+        /// </summary>
+        private void AttachSelectAllBehavior(Control parent)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c is TextBoxBase tb)
+                {
+                    tb.Enter += (s, e) => tb.SelectAll();
+                    tb.MouseClick += (s, e) => tb.SelectAll();
+                }
+                else if (c is NumericUpDown nud)
+                {
+                    var inner = nud.Controls.OfType<TextBox>().FirstOrDefault();
+                    if (inner != null)
+                    {
+                        inner.Enter += (s, e) => inner.SelectAll();
+                        inner.MouseClick += (s, e) => inner.SelectAll();
+                    }
+                }
+                if (c.HasChildren)
+                    AttachSelectAllBehavior(c);
+            }
         }
 
         #endregion
