@@ -1,4 +1,5 @@
-﻿namespace RecetarioWinformsUI.Ingredients
+﻿
+namespace RecetarioWinformsUI.Ingredients
 {
     partial class AddIngredient
     {
@@ -84,13 +85,15 @@
             // 
             // txtAmountSoldBy
             // 
-            txtAmountSoldBy.Location = new Point(131, 109);
+            txtAmountSoldBy.DecimalPlaces = 3;
+            txtAmountSoldBy.Increment = new decimal(new int[] { 1, 0, 0, 196608 });
+            txtAmountSoldBy.Location = new Point(130, 107);
             txtAmountSoldBy.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
-            txtAmountSoldBy.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            txtAmountSoldBy.Minimum = new decimal(new int[] { 1, 0, 0, 196608 });
             txtAmountSoldBy.Name = "txtAmountSoldBy";
             txtAmountSoldBy.Size = new Size(91, 23);
             txtAmountSoldBy.TabIndex = 3;
-            txtAmountSoldBy.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            txtAmountSoldBy.Value = new decimal(new int[] { 5, 0, 0, 196608 });
             // 
             // txtProvider
             // 
@@ -215,6 +218,8 @@
             btnCancel.TabIndex = 9;
             btnCancel.Text = "&Cancelar";
             btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += BtnCancel_Click;
+            this.CancelButton = btnCancel;
             // 
             // btnAddAndContinue
             // 
@@ -252,6 +257,11 @@
             ((System.ComponentModel.ISupportInitialize)txtCost).EndInit();
             ResumeLayout(false);
             PerformLayout();
+        }
+
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         #endregion

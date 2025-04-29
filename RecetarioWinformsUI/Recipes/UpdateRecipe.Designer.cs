@@ -1,4 +1,6 @@
-﻿namespace RecetarioWinformsUI.Recipes
+﻿
+
+namespace RecetarioWinformsUI.Recipes
 {
     partial class UpdateRecipe
     {
@@ -10,7 +12,6 @@
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,10 +23,6 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdateRecipe));
@@ -68,14 +65,7 @@
             label3 = new Label();
             label2 = new Label();
             label1 = new Label();
-            groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)gvSubRecipe).BeginInit();
-            groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)gvRecipeIngredients).BeginInit();
-            groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)txtEfficiency).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)txtAmount).BeginInit();
-            SuspendLayout();
+
             // 
             // btnCancel
             // 
@@ -86,7 +76,6 @@
             btnCancel.TabIndex = 10;
             btnCancel.Text = "&Cancelar";
             btnCancel.UseVisualStyleBackColor = true;
-            //btnCancel.Click += BtnCancel_Click;
             // 
             // btnUpdateRecipe
             // 
@@ -140,7 +129,7 @@
             btnAddSubRecipe.TabIndex = 6;
             btnAddSubRecipe.Text = "+";
             btnAddSubRecipe.UseVisualStyleBackColor = true;
-            //btnAddSubRecipe.Click += BtnAddSubRecipe_Click;
+            btnAddSubRecipe.Click += btnAddSubRecipe_Click;
             // 
             // gvSubRecipe
             // 
@@ -149,18 +138,26 @@
             gvSubRecipe.AllowUserToOrderColumns = true;
             gvSubRecipe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
             gvSubRecipe.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gvSubRecipe.Columns.AddRange(new DataGridViewColumn[] { SubRecipeId, SubRecipeRecipeName, SubRecipeAmountProduced, SubRecipeUnitAbreviation, SubRecipeEfficiency, SubRecipeCost, btnViewRecipeSubRecipeView, btnRemoveRecipeSubRecipe });
+            gvSubRecipe.Columns.AddRange(new DataGridViewColumn[] {
+                SubRecipeId,
+                SubRecipeRecipeName,
+                SubRecipeAmountProduced,
+                SubRecipeUnitAbreviation,
+                SubRecipeEfficiency,
+                SubRecipeCost,
+                btnViewRecipeSubRecipeView,
+                btnRemoveRecipeSubRecipe
+            });
             gvSubRecipe.Location = new Point(7, 34);
             gvSubRecipe.Name = "gvSubRecipe";
             gvSubRecipe.ReadOnly = true;
             gvSubRecipe.RowHeadersVisible = false;
-            gvSubRecipe.RowTemplate.Height = 25;
             gvSubRecipe.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             gvSubRecipe.Size = new Size(555, 140);
             gvSubRecipe.TabIndex = 1;
             gvSubRecipe.VirtualMode = true;
-            //gvSubRecipe.CellContentClick += GvSubRecipe_CellContentClick;
-            //gvSubRecipe.CellContentDoubleClick += GvSubRecipe_CellContentDoubleClick;
+            gvSubRecipe.CellContentClick += GvSubRecipe_CellContentClick;
+            gvSubRecipe.CellContentDoubleClick += GvSubRecipe_CellContentDoubleClick;
             // 
             // SubRecipeId
             // 
@@ -169,7 +166,6 @@
             SubRecipeId.Name = "SubRecipeId";
             SubRecipeId.ReadOnly = true;
             SubRecipeId.Visible = false;
-            SubRecipeId.Width = 58;
             // 
             // SubRecipeRecipeName
             // 
@@ -177,7 +173,6 @@
             SubRecipeRecipeName.HeaderText = "Nombre";
             SubRecipeRecipeName.Name = "SubRecipeRecipeName";
             SubRecipeRecipeName.ReadOnly = true;
-            SubRecipeRecipeName.Width = 76;
             // 
             // SubRecipeAmountProduced
             // 
@@ -185,7 +180,6 @@
             SubRecipeAmountProduced.HeaderText = "Cantidad";
             SubRecipeAmountProduced.Name = "SubRecipeAmountProduced";
             SubRecipeAmountProduced.ReadOnly = true;
-            SubRecipeAmountProduced.Width = 80;
             // 
             // SubRecipeUnitAbreviation
             // 
@@ -193,7 +187,6 @@
             SubRecipeUnitAbreviation.HeaderText = "Unidad";
             SubRecipeUnitAbreviation.Name = "SubRecipeUnitAbreviation";
             SubRecipeUnitAbreviation.ReadOnly = true;
-            SubRecipeUnitAbreviation.Width = 70;
             // 
             // SubRecipeEfficiency
             // 
@@ -208,28 +201,22 @@
             SubRecipeCost.HeaderText = "Costo";
             SubRecipeCost.Name = "SubRecipeCost";
             SubRecipeCost.ReadOnly = true;
-            SubRecipeCost.Width = 63;
             // 
             // btnViewRecipeSubRecipeView
             // 
             btnViewRecipeSubRecipeView.HeaderText = "Ver";
             btnViewRecipeSubRecipeView.Name = "btnViewRecipeSubRecipeView";
             btnViewRecipeSubRecipeView.ReadOnly = true;
-            btnViewRecipeSubRecipeView.SortMode = DataGridViewColumnSortMode.Automatic;
             btnViewRecipeSubRecipeView.Text = "Ver";
             btnViewRecipeSubRecipeView.UseColumnTextForButtonValue = true;
-            btnViewRecipeSubRecipeView.Width = 48;
             // 
             // btnRemoveRecipeSubRecipe
             // 
             btnRemoveRecipeSubRecipe.HeaderText = "Remover";
             btnRemoveRecipeSubRecipe.Name = "btnRemoveRecipeSubRecipe";
             btnRemoveRecipeSubRecipe.ReadOnly = true;
-            btnRemoveRecipeSubRecipe.Resizable = DataGridViewTriState.True;
-            btnRemoveRecipeSubRecipe.SortMode = DataGridViewColumnSortMode.Automatic;
             btnRemoveRecipeSubRecipe.Text = "Remover";
             btnRemoveRecipeSubRecipe.UseColumnTextForButtonValue = true;
-            btnRemoveRecipeSubRecipe.Width = 79;
             // 
             // groupBox2
             // 
@@ -283,18 +270,25 @@
             gvRecipeIngredients.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
             gvRecipeIngredients.BorderStyle = BorderStyle.Fixed3D;
             gvRecipeIngredients.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gvRecipeIngredients.Columns.AddRange(new DataGridViewColumn[] { IngredientId, IngredientName, IngredientQuantity, IngredientUnit, IngredientEfficiency, Cost, btnRemoveRecipeIngredient });
+            gvRecipeIngredients.Columns.AddRange(new DataGridViewColumn[] {
+                IngredientId,
+                IngredientName,
+                IngredientQuantity,
+                IngredientUnit,
+                IngredientEfficiency,
+                Cost,
+                btnRemoveRecipeIngredient
+            });
             gvRecipeIngredients.Location = new Point(6, 35);
             gvRecipeIngredients.MultiSelect = false;
             gvRecipeIngredients.Name = "gvRecipeIngredients";
             gvRecipeIngredients.ReadOnly = true;
             gvRecipeIngredients.RowHeadersVisible = false;
-            gvRecipeIngredients.RowTemplate.Height = 25;
             gvRecipeIngredients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             gvRecipeIngredients.Size = new Size(555, 140);
             gvRecipeIngredients.TabIndex = 0;
             gvRecipeIngredients.VirtualMode = true;
-            //gvRecipeIngredients.CellContentClick += GvRecipeIngredients_CellContentClick;
+            gvRecipeIngredients.CellContentClick += GvRecipeIngredients_CellContentClick;
             // 
             // IngredientId
             // 
@@ -303,7 +297,6 @@
             IngredientId.Name = "IngredientId";
             IngredientId.ReadOnly = true;
             IngredientId.Visible = false;
-            IngredientId.Width = 77;
             // 
             // IngredientName
             // 
@@ -311,7 +304,6 @@
             IngredientName.HeaderText = "Nombre";
             IngredientName.Name = "IngredientName";
             IngredientName.ReadOnly = true;
-            IngredientName.Width = 76;
             // 
             // IngredientQuantity
             // 
@@ -319,7 +311,6 @@
             IngredientQuantity.HeaderText = "Cantidad";
             IngredientQuantity.Name = "IngredientQuantity";
             IngredientQuantity.ReadOnly = true;
-            IngredientQuantity.Width = 80;
             // 
             // IngredientUnit
             // 
@@ -327,7 +318,6 @@
             IngredientUnit.HeaderText = "Unidad";
             IngredientUnit.Name = "IngredientUnit";
             IngredientUnit.ReadOnly = true;
-            IngredientUnit.Width = 70;
             // 
             // IngredientEfficiency
             // 
@@ -342,7 +332,6 @@
             Cost.HeaderText = "Costo";
             Cost.Name = "Cost";
             Cost.ReadOnly = true;
-            Cost.Width = 63;
             // 
             // btnRemoveRecipeIngredient
             // 
@@ -350,9 +339,7 @@
             btnRemoveRecipeIngredient.Name = "btnRemoveRecipeIngredient";
             btnRemoveRecipeIngredient.ReadOnly = true;
             btnRemoveRecipeIngredient.Text = "Remover";
-            btnRemoveRecipeIngredient.ToolTipText = "Remover este ingrediente de la Receta.";
             btnRemoveRecipeIngredient.UseColumnTextForButtonValue = true;
-            btnRemoveRecipeIngredient.Width = 60;
             // 
             // groupBox1
             // 
@@ -474,7 +461,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Font = new Font("Segoe UI", 15.75F);
             label1.Location = new Point(12, 9);
             label1.Name = "label1";
             label1.Size = new Size(173, 30);
@@ -513,6 +500,33 @@
             ((System.ComponentModel.ISupportInitialize)txtAmount).EndInit();
             ResumeLayout(false);
             PerformLayout();
+        }
+
+        private void GvSubRecipe_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void GvSubRecipe_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0
+                || gvSubRecipe.Columns[e.ColumnIndex] is not DataGridViewButtonColumn btn
+                || btn.Name != "btnRemoveRecipeSubRecipe")
+                return;
+
+            if (MessageBox.Show("¿Remover esta subreceta?", "",
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                != DialogResult.Yes) return;
+
+            var relationId = gvSubRecipe.Rows[e.RowIndex].Cells["RelationId"].Value;
+            if (relationId is not int id) return;
+
+            BeginInvoke((Action)(() =>
+            {
+                SubRecipes.RemoveAll(x => x.Id == id);
+                GvSubRecipesDataBind();
+                RecalculateCosts();
+            }));
         }
 
         #endregion

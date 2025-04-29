@@ -95,5 +95,12 @@ namespace RecetarioBackEnd.BLL
         {
             return RecipeIngredientsDAL.GetRecipeIngredients(recipeId).Any(i => i.IngredientId == ingredientId);
         }
+
+        public void DeleteRecipeIngredient(int id)
+        {
+            var entity = RecipeIngredientsDAL.GetRecipeIngredient(id);
+            if (entity != null)
+                RecipeIngredientsDAL.DeleteRecipeIngredient(entity);
+        }
     }
 }

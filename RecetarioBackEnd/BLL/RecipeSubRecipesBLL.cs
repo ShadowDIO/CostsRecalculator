@@ -156,5 +156,17 @@ namespace RecetarioBackEnd.BLL
         {
             return RecipeSubRecipesDAL.GetRecipeSubRecipes(recipeId).Any(sr => sr.SubRecipeId == subRecipeId);
         }
+
+        public void DeleteRecipeSubRecipe(int id)
+        {
+            var entity = RecipeSubRecipesDAL.GetRecipeSubRecipe(id);
+            if (entity == null)
+            {
+                return;
+            }
+
+            RecipeSubRecipesDAL.DeleteSubRecipe(entity);
+        }
+
     }
 }

@@ -9,5 +9,6 @@ namespace RecetarioBackEnd.DAL.Interfaces
         IEnumerable<RecipeIngredient> GetRecipeIngredients(int recipeId);
         void UpdateRecipeIngredient(RecipeIngredient recipeIngredient);
         void DeleteRecipeIngredient(RecipeIngredient recipeIngredient);
+        void DeleteRecipeIngredient(int id);
     }
 }

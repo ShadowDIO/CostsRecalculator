@@ -102,16 +102,23 @@ namespace RecetarioWinformsUI.Recipes
         private void BtnUpdateRecipe_Click(object sender, EventArgs e)
         {
             var recipeIdSelected = gvRecipes.SelectedRows[0].Cells["Id"].Value as long?;
-
             if (recipeIdSelected == null)
             {
                 MessageBox.Show("Tried to Update recipe without Id", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var frmUpdateRecipe = new UpdateRecipe((int)recipeIdSelected.Value, RecipesBLL, UnitsBLL, IngredientsBLL);
+            var frmUpdateRecipe = new UpdateRecipe(
+                (int)recipeIdSelected.Value,
+                RecipesBLL,
+                UnitsBLL,
+                IngredientsBLL,
+                RecipeIngredientsBLL, 
+                RecipeSubRecipesBLL
+            );
             frmUpdateRecipe.ShowDialog();
         }
+
 
 
         private void BtnCancel_Click(object sender, EventArgs e)

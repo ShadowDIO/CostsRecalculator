@@ -9,5 +9,6 @@ namespace RecetarioBackEnd.BLL.Interfaces
         void CreateRecipeIngredient(RecipeIngredientDTO recipeIngredientDTO);
         void UpdateRecipeIngredient(RecipeIngredientDTO recipeIngredientDTO);
         bool IngredientExistsInRecipe(int recipeId, long ingredientId);
+        void DeleteRecipeIngredient(int id);
     }
 }

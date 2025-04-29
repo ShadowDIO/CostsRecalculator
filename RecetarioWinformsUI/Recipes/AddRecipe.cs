@@ -2,6 +2,7 @@
 using RecetarioBackEnd.DTO;
 using RecetarioBackEnd.Models;
 using RecetarioWinformsUI.Events;
+using System.Diagnostics;
 
 namespace RecetarioWinformsUI.Recipes
 {
@@ -113,68 +114,63 @@ namespace RecetarioWinformsUI.Recipes
 
         private void BtnAddRecipe_Click(object sender, EventArgs e)
         {
-            if (!ValidateRecipe())
-            {
-                return;
-            }
+            if (!ValidateRecipe()) return;
 
-            var newRecipeDTO = new RecipeDTO()
+            var newRecipeDTO = new RecipeDTO
             {
                 RecipeName = txtRecipeName.Text.Trim(),
                 Efficiency = Convert.ToSingle(txtEfficiency.Value / 100),
                 AmountProduced = Convert.ToSingle(txtAmount.Value),
                 UnitId = Convert.ToInt32(cbUnits.SelectedValue),
-                Ingredients = Ingredients.Select(p => new RecipeIngredientDTO()
+                Ingredients = Ingredients.Select(p => new RecipeIngredientDTO
                 {
-                    Ingredient = IngredientsBLL.GetIngredientById(p.Ingredient.Id), // Obtener el ingrediente
+                    Ingredient = IngredientsBLL.GetIngredientById(p.Ingredient.Id),
                     Quantity = p.Quantity,
                     Efficiency = p.Efficiency
                 }).ToList(),
-                SubRecipes = SubRecipes.Select(p => new RecipeSubRecipeDTO()
+                SubRecipes = SubRecipes.Select(p => new RecipeSubRecipeDTO
                 {
-                    SubRecipe = RecipesBLL.GetRecipe(p.SubRecipeId), // Obtener la subreceta
+                    SubRecipe = RecipesBLL.GetRecipe(p.SubRecipeId),
                     Quantity = p.Quantity,
                     Efficiency = p.Efficiency
                 }).ToList()
             };
 
-            var recipeId = RecipesBLL.CreateRecipe(newRecipeDTO); // Utilizamos el método CreateRecipe para insertar
+            var recipeId = RecipesBLL.CreateRecipe(newRecipeDTO);
 
-            Parallel.ForEach(Ingredients, recipeIngredient =>
+            foreach (var ri in Ingredients)
             {
-                // Verificar si ya existe el ingrediente para la receta actual
-                if (!RecipeIngredientsBLL.IngredientExistsInRecipe(recipeId, recipeIngredient.IngredientId))
+                if (!RecipeIngredientsBLL.IngredientExistsInRecipe(recipeId, ri.IngredientId))
                 {
-                    recipeIngredient.RecipeId = recipeId;
-                    RecipeIngredientsBLL.CreateRecipeIngredient(new RecipeIngredientDTO()
+                    RecipeIngredientsBLL.CreateRecipeIngredient(new RecipeIngredientDTO
                     {
-                        Ingredient = IngredientsBLL.GetIngredientById(recipeIngredient.IngredientId),
-                        Quantity = recipeIngredient.Quantity,
-                        Efficiency = recipeIngredient.Efficiency
+                        RecipeId = recipeId,
+                        Ingredient = IngredientsBLL.GetIngredientById(ri.IngredientId),
+                        Quantity = ri.Quantity,
+                        Efficiency = ri.Efficiency
                     });
                 }
-            });
+            }
 
-            // Y para subrecetas:
-            Parallel.ForEach(SubRecipes, subRecipe =>
+            foreach (var sr in SubRecipes)
             {
-                if (!RecipeSubRecipesBLL.SubRecipeExistsInRecipe(recipeId, subRecipe.SubRecipeId))
+                if (!RecipeSubRecipesBLL.SubRecipeExistsInRecipe(recipeId, sr.SubRecipeId))
                 {
-                    subRecipe.RecipeId = recipeId;
-                    RecipeSubRecipesBLL.CreateRecipeSubRecipe(new RecipeSubRecipeDTO()
+                    RecipeSubRecipesBLL.CreateRecipeSubRecipe(new RecipeSubRecipeDTO
                     {
-                        SubRecipe = RecipesBLL.GetRecipe((int)subRecipe.SubRecipeId),
-                        Quantity = subRecipe.Quantity,
-                        Efficiency = subRecipe.Efficiency
+                        RecipeId = recipeId,
+                        SubRecipe = RecipesBLL.GetRecipe((int)sr.SubRecipeId),
+                        Quantity = sr.Quantity,
+                        Efficiency = sr.Efficiency
                     });
                 }
-            });
+            }
 
-
-            GlobalUIEvents.Instance.DispatchOnRecipeAdded(this, new EventArgs());
-            MessageBox.Show("Receta creada exitosamente.", "Recetas.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            GlobalUIEvents.Instance.DispatchOnRecipeAdded(this, EventArgs.Empty);
+            MessageBox.Show("Receta creada exitosamente.", "Recetas", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Close();
         }
+
 
 
         private void TxtAmount_ValueChanged(object sender, EventArgs e)
@@ -189,45 +185,110 @@ namespace RecetarioWinformsUI.Recipes
 
         private void GvRecipeIngredients_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (gvRecipeIngredients.Columns[e.ColumnIndex] is DataGridViewButtonColumn && e.RowIndex >= 0)
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+            if (gvRecipeIngredients.Columns[e.ColumnIndex] is DataGridViewButtonColumn btn
+                && btn.Name == "btnRemoveRecipeIngredient")
             {
-                if (MessageBox.Show("¿Seguro quiere remover este Ingrediente?", "Remover Ingrediente", MessageBoxButtons.YesNo) == DialogResult.No)
+                if (MessageBox.Show(
+                        "¿Seguro quiere remover este Ingrediente?",
+                        "Remover Ingrediente",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question
+                    ) != DialogResult.Yes)
                 {
                     return;
                 }
 
-                var selectedIngredientId = gvRecipeIngredients.Rows[e.RowIndex].Cells["IngredientId"].Value as long?;
+                // Tomamos el ID *inmediatamente*...
+                var cell = gvRecipeIngredients.Rows[e.RowIndex].Cells["IngredientId"];
+                if (cell?.Value is not long id) return;
 
-                Ingredients.RemoveAll(p => p.IngredientId == selectedIngredientId);
-                GvIngredientsDataBind();
-                RecalculateCosts();
+                // Pero la eliminación y el rebind los hacemos después:
+                this.BeginInvoke((Action)(() =>
+                {
+                    Ingredients.RemoveAll(x => x.IngredientId == id);
+                    GvIngredientsDataBind();
+                    RecalculateCosts();
+                }));
             }
         }
+
 
         private void GvSubRecipe_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (gvSubRecipe.Columns[e.ColumnIndex] is DataGridViewButtonColumn && e.RowIndex >= 0)
+            // 1) Filtrar clicks en encabezados o índices fuera de rango
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 ||
+                e.RowIndex >= gvSubRecipe.Rows.Count ||
+                e.ColumnIndex >= gvSubRecipe.Columns.Count)
             {
-                if (((DataGridViewButtonColumn)gvSubRecipe.Columns[e.ColumnIndex]).Name == "btnRemoveRecipeSubRecipe")
-                {
-                    if (MessageBox.Show("¿Seguro quiere remover esta SubReceta?", "Remover SubReceta", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                    {
-                        return;
-                    }
+                return;
+            }
 
-                    var selectedRecipeId = gvSubRecipe.Rows[e.RowIndex].Cells["SubRecipeId"].Value as long?;
-                    SubRecipes.RemoveAll(p => p.SubRecipeId == selectedRecipeId);
+            // 2) Solo reaccionar si es columna de botón
+            if (!(gvSubRecipe.Columns[e.ColumnIndex] is DataGridViewButtonColumn btnCol))
+                return;
+
+            // 3) Botón Remover SubReceta
+            if (btnCol.Name == "btnRemoveRecipeSubRecipe")
+            {
+                if (MessageBox.Show(
+                        "¿Seguro quiere remover esta SubReceta?",
+                        "Remover SubReceta",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question
+                    ) != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                // 4) Leer el ID de forma segura
+                var cell = gvSubRecipe.Rows[e.RowIndex].Cells["SubRecipeId"];
+                if (cell?.Value is not long idToRemove)
+                    return;
+
+                // 5) Deferir la eliminación y el rebindeo al final del ciclo de eventos
+                this.BeginInvoke((Action)(() =>
+                {
+                    SubRecipes.RemoveAll(x => x.SubRecipeId == idToRemove);
                     GvSubRecipesDataBind();
                     RecalculateCosts();
-                }
-                else if (((DataGridViewButtonColumn)gvSubRecipe.Columns[e.ColumnIndex]).Name == "btnViewRecipeSubRecipeView")
+                }));
+            }
+            // 6) Botón Ver SubReceta
+            else if (btnCol.Name == "btnViewRecipeSubRecipeView")
+            {
+                var cell = gvSubRecipe.Rows[e.RowIndex].Cells["SubRecipeId"];
+                if (cell?.Value is not long idToView)
+                    return;
+
+                try
                 {
-                    var recipeId = gvSubRecipe.Rows[e.RowIndex].Cells["SubRecipeId"].Value as long?;
-                    var viewSubRecipeForm = new ViewRecipe((int)recipeId,RecipesBLL);
-                    viewSubRecipeForm.Show();
+                    var viewForm = new ViewRecipe((int)idToView, RecipesBLL);
+                    viewForm.Show();
+                }
+                catch (Exception ex)
+                {
+                    ShowError("Error abriendo SubReceta", ex);
                 }
             }
         }
+
+        // Método auxiliar para mostrar excepción con detalle
+        private void ShowError(string title, Exception ex)
+        {
+            // Puedes cambiar Debug.WriteLine por tu logger favorito
+            Debug.WriteLine($"[{title}] {ex.GetType().Name}: {ex.Message}");
+            Debug.WriteLine(ex.StackTrace);
+
+            MessageBox.Show(
+                $"{title}:\n\n{ex.GetType().Name}\n{ex.Message}",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+        }
+
 
         private void GvSubRecipe_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
