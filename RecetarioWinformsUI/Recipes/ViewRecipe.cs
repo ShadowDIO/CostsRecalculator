@@ -49,41 +49,104 @@ namespace RecetarioWinformsUI.Recipes
         {
             if (SelectedRecipe == null) return;
 
+            // Título
             lblRecipeName.Text = $"{SelectedRecipe.RecipeName} para {SelectedRecipe.AmountProduced} {SelectedRecipe.UnitName}";
             txtRecipeName.Text = SelectedRecipe.RecipeName;
-            txtAmount.Value = Convert.ToDecimal(SelectedRecipe.AmountProduced);
+
+            // —— 1) Cantidad Producida: conversión segura y clamp
+            {
+                double rawAmount = SelectedRecipe.AmountProduced;
+                decimal amountValue;
+
+                if (double.IsNaN(rawAmount) || double.IsInfinity(rawAmount))
+                {
+                    amountValue = txtAmount.Minimum;
+                }
+                else
+                {
+                    try
+                    {
+                        amountValue = Convert.ToDecimal(rawAmount);
+                    }
+                    catch (OverflowException)
+                    {
+                        amountValue = txtAmount.Maximum;
+                    }
+
+                    if (amountValue < txtAmount.Minimum) amountValue = txtAmount.Minimum;
+                    if (amountValue > txtAmount.Maximum) amountValue = txtAmount.Maximum;
+                }
+
+                txtAmount.Value = amountValue;
+            }
+
+            // Unidad y Costo
             txtUnits.Text = SelectedRecipe.UnitName;
             txtCost.Text = SelectedRecipe.Cost.ToString("C2");
-            txtEfficiency.Value = Convert.ToDecimal(SelectedRecipe.Efficiency);
 
-            gvRecipeIngredients.DataSource = SelectedRecipe.Ingredients.Select(p => new
+            // —— 2) Rendimiento/Efficiency: conversión segura y clamp
             {
-                Id = p.Ingredient.Id,
-                IngredientName = StringHelper.TrimLongName(p.Ingredient.IngredientName),
-                IngredientQuantity = p.Quantity,
-                IngredientUnit = p.Ingredient.UnitName,
-                IngredientEfficiency = p.Efficiency.ToString("P"),
-                IngredientCost = p.Cost.ToString("C2")
-            }).ToList();
+                double rawEff = SelectedRecipe.Efficiency;
+                decimal effValue;
+
+                if (double.IsNaN(rawEff) || double.IsInfinity(rawEff))
+                {
+                    effValue = txtEfficiency.Minimum;
+                }
+                else
+                {
+                    try
+                    {
+                        effValue = Convert.ToDecimal(rawEff);
+                    }
+                    catch (OverflowException)
+                    {
+                        effValue = txtEfficiency.Maximum;
+                    }
+
+                    if (effValue < txtEfficiency.Minimum) effValue = txtEfficiency.Minimum;
+                    if (effValue > txtEfficiency.Maximum) effValue = txtEfficiency.Maximum;
+                }
+
+                txtEfficiency.Value = effValue;
+            }
+
+            // Ingredientes
+            gvRecipeIngredients.DataSource = SelectedRecipe.Ingredients
+                .Select(p => new
+                {
+                    Id = p.Ingredient.Id,
+                    IngredientName = StringHelper.TrimLongName(p.Ingredient.IngredientName),
+                    IngredientQuantity = p.Quantity,
+                    IngredientUnit = p.Ingredient.UnitName,
+                    IngredientEfficiency = p.Efficiency.ToString("P"),
+                    IngredientCost = p.Cost.ToString("C2")
+                })
+                .ToList();
             gvRecipeIngredients.Update();
 
             txtIngredientCosts.Text = SelectedRecipe.Ingredients.Sum(p => p.Cost).ToString("C2");
 
-            gvSubRecipes.DataSource = SelectedRecipe.SubRecipes.Select(p => new
-            {
-                SubRecipeId = p.SubRecipe?.Id,
-                SubRecipeName = p.SubRecipe?.RecipeName,
-                SubRecipeQuantity = p.Quantity,
-                SubRecipeUnit = p.SubRecipe?.UnitName,
-                SubRecipeEfficiency = p.Efficiency.ToString("P"),
-                SubRecipeCost = p.Cost.ToString("C2")
-            }).ToList();
+            // Subrecetas
+            gvSubRecipes.DataSource = SelectedRecipe.SubRecipes
+                .Select(p => new
+                {
+                    SubRecipeId = p.SubRecipe?.Id,
+                    SubRecipeName = p.SubRecipe?.RecipeName,
+                    SubRecipeQuantity = p.Quantity,
+                    SubRecipeUnit = p.SubRecipe?.UnitName,
+                    SubRecipeEfficiency = p.Efficiency.ToString("P"),
+                    SubRecipeCost = p.Cost.ToString("C2")
+                })
+                .ToList();
             gvSubRecipes.Update();
 
             txtSubRecipesCost.Text = SelectedRecipe.SubRecipes.Sum(p => p.Cost).ToString("C2");
 
+            // Margen de utilidad
             CalculateUtilityMargin();
         }
+
 
         private void LoadRecalculateFieldParameters(RecipeRecalculateParametersDTO recalc)
         {

@@ -195,51 +195,91 @@ namespace RecetarioWinformsUI.Recipes
         {
             if (!ValidateRecipe() || Recipe == null) return;
 
-            // 1) Actualiza datos principales
+            // 1) Actualiza datos principales de la receta
             Recipe.RecipeName = txtRecipeName.Text.Trim();
             Recipe.Efficiency = (float)(txtEfficiency.Value / 100m);
             Recipe.AmountProduced = (float)txtAmount.Value;
             Recipe.UnitId = Convert.ToInt32(cbUnits.SelectedValue);
             RecipesBLL.UpdateRecipe(Recipe);
 
-            // 2) Sincroniza relaciones
-            var dbIngredients = RecipesBLL.GetRecipeIngredients((int)Recipe.Id).ToList();
-            var dbSubRecipes = RecipesBLL.GetRecipeSubRecipes((int)Recipe.Id).ToList();
+            // 2) Sincroniza ingredientes
+            // ——————————————————————————————————————————————————————————————————
+            // Traigo lo que hay en BD
+            var dbIngredients = RecipesBLL
+                .GetRecipeIngredients((int)Recipe.Id)
+                .ToList();
 
-            // Ingredientes
-            var toDeleteIngr = dbIngredients.Where(db => !Ingredients.Any(i => i.Id == db.Id)).ToList();
-            var toAddIngr = Ingredients.Where(i => !dbIngredients.Any(db => db.Id == i.Id)).ToList();
+            // 2.a) Eliminar los que ya no están en la UI
+            var toDeleteIngr = dbIngredients
+                .Where(db => !Ingredients.Any(i => i.Ingredient.Id == db.Ingredient.Id))
+                .ToList();
+            toDeleteIngr.ForEach(x =>
+                RecipeIngredientsBLL.DeleteRecipeIngredient(x.Id));
 
-            toDeleteIngr.ForEach(x => RecipeIngredientsBLL.DeleteRecipeIngredient(x.Id));
-            toAddIngr.ForEach(i =>
+            // 2.b) Para cada ingrediente actual, o lo actualizo o lo creo
+            foreach (var dto in Ingredients)
             {
-                i.RecipeId = Recipe.Id;
-                RecipeIngredientsBLL.CreateRecipeIngredient(new RecipeIngredientDTO
+                var existing = dbIngredients
+                    .FirstOrDefault(db => db.Ingredient.Id == dto.Ingredient.Id);
+
+                if (existing != null)
                 {
-                    RecipeId = i.RecipeId,
-                    Ingredient = new IngredientDTO { Id = i.Ingredient.Id },
-                    Quantity = i.Quantity,
-                    Efficiency = i.Efficiency
-                });
-            });
+                    // Ya existía → solo actualizo cantidad/eficiencia
+                    existing.Quantity = dto.Quantity;
+                    existing.Efficiency = dto.Efficiency;
+                    RecipeIngredientsBLL.UpdateRecipeIngredient(existing);
+                }
+                else
+                {
+                    // Es nuevo → creo la relación
+                    RecipeIngredientsBLL.CreateRecipeIngredient(new RecipeIngredientDTO
+                    {
+                        RecipeId = Recipe.Id,
+                        Ingredient = new IngredientDTO { Id = dto.Ingredient.Id },
+                        Quantity = dto.Quantity,
+                        Efficiency = dto.Efficiency
+                    });
+                }
+            }
 
-            // SubRecetas
-            var toDeleteSub = dbSubRecipes.Where(db => !SubRecipes.Any(s => s.Id == db.Id)).ToList();
-            var toAddSub = SubRecipes.Where(s => !dbSubRecipes.Any(db => db.Id == s.Id)).ToList();
+            // 3) Sincroniza sub‐recetas (idéntico a ingredientes)
+            // ——————————————————————————————————————————————————————————————————
+            var dbSubs = RecipesBLL
+                .GetRecipeSubRecipes((int)Recipe.Id)
+                .ToList();
 
-            toDeleteSub.ForEach(x => RecipeSubRecipesBLL.DeleteRecipeSubRecipe(x.Id));
-            toAddSub.ForEach(s =>
+            // 3.a) Eliminar las subrecetas que ya no están
+            var toDeleteSubs = dbSubs
+                .Where(db => !SubRecipes.Any(s => s.SubRecipeId == db.SubRecipeId))
+                .ToList();
+            toDeleteSubs.ForEach(x =>
+                RecipeSubRecipesBLL.DeleteRecipeSubRecipe(x.Id));
+
+            // 3.b) Para cada subreceta actual, actualizo o creo
+            foreach (var dto in SubRecipes)
             {
-                s.RecipeId = Recipe.Id;
-                RecipeSubRecipesBLL.CreateRecipeSubRecipe(new RecipeSubRecipeDTO
-                {
-                    RecipeId = s.RecipeId,
-                    SubRecipe = s.SubRecipe,
-                    Quantity = s.Quantity,
-                    Efficiency = s.Efficiency
-                });
-            });
+                var existing = dbSubs
+                    .FirstOrDefault(db => db.SubRecipeId == dto.SubRecipeId);
 
+                if (existing != null)
+                {
+                    existing.Quantity = dto.Quantity;
+                    existing.Efficiency = dto.Efficiency;
+                    RecipeSubRecipesBLL.UpdateRecipeSubRecipe(existing);
+                }
+                else
+                {
+                    RecipeSubRecipesBLL.CreateRecipeSubRecipe(new RecipeSubRecipeDTO
+                    {
+                        RecipeId = Recipe.Id,
+                        SubRecipeId = dto.SubRecipeId,
+                        Quantity = dto.Quantity,
+                        Efficiency = dto.Efficiency
+                    });
+                }
+            }
+
+            // 4) Refresco UI y cierro
             GlobalUIEvents.Instance.DispatchOnRecipeUpdated(this, EventArgs.Empty);
             MessageBox.Show("Receta actualizada correctamente.", "Éxito",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
