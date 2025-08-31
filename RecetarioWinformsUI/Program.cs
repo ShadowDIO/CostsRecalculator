@@ -1,3 +1,6 @@
+using System;
+using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
 using RecetarioBackEnd.BLL;
 using RecetarioBackEnd.BLL.Interfaces;
 using RecetarioBackEnd.DAL;
@@ -8,26 +11,40 @@ namespace RecetarioWinformsUI
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
-            IIngredientsDAL ingredientsDAL = new IngredientsDAL();
-            IUnitsDAL unitsDAL = new UnitsDAL();
-            IRecipesDAL recipesDAL = new RecipesDAL();
-            IRecipeIngredientsDAL recipeIngredientsDAL = new RecipeIngredientsDAL();
-            IRecipeSubRecipesDAL recipeSubRecipesDAL = new RecipeSubRecipesDAL();
+            // 1) Configuramos el contenedor de servicios
+            var services = new ServiceCollection();
 
-            IIngredientsBLL ingredientsBLL = new IngredientsBLL(ingredientsDAL);
-            IUnitsBLL unitsBLL = new UnitsBLL(unitsDAL);
-            IRecipesBLL recipesBLL = new RecipesBLL(recipesDAL, recipeIngredientsDAL, recipeSubRecipesDAL, ingredientsBLL);
-            IRecipeIngredientsBLL recipeIngredientsBLL = new RecipeIngredientsBLL(recipeIngredientsDAL);
-            IRecipeSubRecipesBLL recipeSubRecipesBLL = new RecipeSubRecipesBLL(recipeSubRecipesDAL);
+            // 2) Registramos DALs
+            services.AddSingleton<IIngredientsDAL, IngredientsDAL>();
+            services.AddSingleton<IUnitsDAL, UnitsDAL>();
+            services.AddSingleton<IRecipesDAL, RecipesDAL>();
+            services.AddSingleton<IRecipeIngredientsDAL, RecipeIngredientsDAL>();
+            services.AddSingleton<IRecipeSubRecipesDAL, RecipeSubRecipesDAL>();
 
+            // 3) Registramos BLLs
+            services.AddSingleton<IIngredientsBLL, IngredientsBLL>();
+            services.AddSingleton<IUnitsBLL, UnitsBLL>();
+            services.AddSingleton<IRecipesBLL, RecipesBLL>();
+            services.AddSingleton<IRecipeIngredientsBLL, RecipeIngredientsBLL>();
+            services.AddSingleton<IRecipeSubRecipesBLL, RecipeSubRecipesBLL>();
+
+            // 4) Registramos el formulario principal
+            services.AddSingleton<MainWindow>();
+
+            // 5) Construimos el ServiceProvider
+            var serviceProvider = services.BuildServiceProvider();
+
+            // 6) Inicializamos WinForms
             ApplicationConfiguration.Initialize();
-            Application.Run(new MainWindow(ingredientsBLL, unitsBLL, recipesBLL, recipeIngredientsBLL, recipeSubRecipesBLL));
+            Application.ThreadException += (s, e) =>
+                MessageBox.Show(e.Exception.ToString(), "Error en hilo UI", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            // 7) Ejecutamos la UI
+            var mainForm = serviceProvider.GetRequiredService<MainWindow>();
+            Application.Run(mainForm);
         }
     }
 }

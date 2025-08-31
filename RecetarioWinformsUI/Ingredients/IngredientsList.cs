@@ -14,11 +14,13 @@ namespace RecetarioWinformsUI.Ingredients
         {
             InitializeComponent();
 
+            // Habilita SelectAll en todos los controles de entrada
+            AttachSelectAllBehavior(this);
+
             IngredientsBLL = ingredientsBLL;
             UnitsBLL = unitsBLL;
 
             LoadIngredientsDataSource();
-
             GvIngredientsDataBind(Ingredients);
 
             GlobalUIEvents.Instance.OnIngredientAdded += OnIngredientAdded;
@@ -43,29 +45,30 @@ namespace RecetarioWinformsUI.Ingredients
                     UnitName = p.UnitName,
                     Efficiency = $"{p.Efficiency:P}",
                     Provider = p.Provider
-                }).ToList();
+                })
+                .ToList();
 
             gvIngredients.DataSource = data;
-
             gvIngredients.Refresh();
-
             btnUpdateIngredient.Enabled = data.Count > 0;
         }
 
         private void FilterIngredientsGridView()
         {
-            if (string.IsNullOrEmpty(txtSearchIngredient.Text.Trim()))
+            if (string.IsNullOrWhiteSpace(txtSearchIngredient.Text))
             {
                 GvIngredientsDataBind(Ingredients);
                 return;
             }
 
-            var filteredSource = Ingredients;
+            var query = txtSearchIngredient.Text.Trim().ToLower();
+            IEnumerable<IngredientDTO> filteredSource;
 
             if (rdName.Checked)
-                filteredSource = filteredSource.Where(x => x.IngredientName.ToLower().Contains(txtSearchIngredient.Text.ToLower())).ToList();
+                filteredSource = Ingredients.Where(x => x.IngredientName.ToLower().Contains(query));
             else
-                filteredSource = filteredSource.Where(x => x.Provider != null && x.Provider.ToLower().Contains(txtSearchIngredient.Text.ToLower())).ToList();
+                filteredSource = Ingredients.Where(x =>
+                    !string.IsNullOrEmpty(x.Provider) && x.Provider.ToLower().Contains(query));
 
             GvIngredientsDataBind(filteredSource);
         }
@@ -114,15 +117,25 @@ namespace RecetarioWinformsUI.Ingredients
         private void BtnUpdateIngredient_Click(object sender, EventArgs e)
         {
             var selectedIngredientId = gvIngredients.SelectedRows[0].Cells["Id"].Value as long?;
-
             if (!selectedIngredientId.HasValue)
             {
-                MessageBox.Show("Tried to update ingredient without Id", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Tried to update ingredient without Id", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             var frmUpdateIngredient = new UpdateIngredient((int)selectedIngredientId.Value, IngredientsBLL, UnitsBLL);
             frmUpdateIngredient.ShowDialog();
+        }
+
+        private void GvIngredients_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            BtnUpdateIngredient_Click(sender, e);
+        }
+
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
+            Close();
         }
 
         private void IngredientsList_FormClosing(object sender, FormClosingEventArgs e)
@@ -132,23 +145,31 @@ namespace RecetarioWinformsUI.Ingredients
             GlobalUIEvents.Instance.OnUnitUpdated -= OnUnitUpdated;
         }
 
-        private void BtnCancel_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Recorre recursivamente controles y suscribe Enter y MouseClick para SelectAll().
+        /// </summary>
+        private void AttachSelectAllBehavior(Control parent)
         {
-            Close();
-        }
-
-        private void GvIngredients_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            var selectedIngredientId = gvIngredients.SelectedRows[0].Cells["Id"].Value as long?;
-
-            if (!selectedIngredientId.HasValue)
+            foreach (Control c in parent.Controls)
             {
-                MessageBox.Show("Tried to update ingredient without Id", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+                if (c is TextBoxBase tb)
+                {
+                    tb.Enter += (s, e) => tb.SelectAll();
+                    tb.MouseClick += (s, e) => tb.SelectAll();
+                }
+                else if (c is NumericUpDown nud)
+                {
+                    var inner = nud.Controls.OfType<TextBox>().FirstOrDefault();
+                    if (inner != null)
+                    {
+                        inner.Enter += (s, e) => inner.SelectAll();
+                        inner.MouseClick += (s, e) => inner.SelectAll();
+                    }
+                }
 
-            var frmUpdateIngredient = new UpdateIngredient((int)selectedIngredientId.Value, IngredientsBLL, UnitsBLL);
-            frmUpdateIngredient.ShowDialog();
+                if (c.HasChildren)
+                    AttachSelectAllBehavior(c);
+            }
         }
     }
 }

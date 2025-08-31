@@ -82,7 +82,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Font = new Font("Segoe UI", 15.75F);
             label1.Location = new Point(12, 19);
             label1.Name = "label1";
             label1.Size = new Size(155, 30);
@@ -267,7 +267,6 @@
             gvRecipeIngredients.Name = "gvRecipeIngredients";
             gvRecipeIngredients.ReadOnly = true;
             gvRecipeIngredients.RowHeadersVisible = false;
-            gvRecipeIngredients.RowTemplate.Height = 25;
             gvRecipeIngredients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             gvRecipeIngredients.Size = new Size(555, 140);
             gvRecipeIngredients.TabIndex = 0;
@@ -388,7 +387,6 @@
             gvSubRecipe.Name = "gvSubRecipe";
             gvSubRecipe.ReadOnly = true;
             gvSubRecipe.RowHeadersVisible = false;
-            gvSubRecipe.RowTemplate.Height = 25;
             gvSubRecipe.Size = new Size(555, 140);
             gvSubRecipe.TabIndex = 1;
             gvSubRecipe.CellContentClick += GvSubRecipe_CellContentClick;

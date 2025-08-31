@@ -48,5 +48,14 @@ namespace RecetarioBackEnd.DAL
 
             ((RecetarioDbContext)db).SaveChanges();
         }
+
+        public void DeleteRecipeIngredient(int id)
+        {
+            var ctx = (RecetarioDbContext)db;
+            var entity = ctx.RecipeIngredients.FirstOrDefault(p => p.Id == id);
+            if (entity == null) return;
+            ctx.RecipeIngredients.Remove(entity);
+            ctx.SaveChanges();
+        }
     }
 }

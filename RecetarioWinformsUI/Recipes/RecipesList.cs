@@ -14,9 +14,18 @@ namespace RecetarioWinformsUI.Recipes
         private readonly IUnitsBLL UnitsBLL;
         private readonly IIngredientsBLL IngredientsBLL;
 
-        public RecipesList(IRecipesBLL recipesBLL, IRecipeIngredientsBLL recipeIngredientsBLL, IRecipeSubRecipesBLL recipeSubRecipesBLL, IUnitsBLL unitsBLL, IIngredientsBLL ingredientsBLL)
+        public RecipesList(
+            IRecipesBLL recipesBLL,
+            IRecipeIngredientsBLL recipeIngredientsBLL,
+            IRecipeSubRecipesBLL recipeSubRecipesBLL,
+            IUnitsBLL unitsBLL,
+            IIngredientsBLL ingredientsBLL)
         {
             InitializeComponent();
+
+            // Habilita SelectAll en los textboxes al hacer clic o tab
+            AttachSelectAllBehavior(this);
+
             RecipesBLL = recipesBLL;
             RecipeIngredientsBLL = recipeIngredientsBLL;
             RecipeSubRecipesBLL = recipeSubRecipesBLL;
@@ -32,37 +41,40 @@ namespace RecetarioWinformsUI.Recipes
 
         private void LoadRecipeDataSource()
         {
-            Recipes = RecipesBLL.GetAllRecipes(includeIngredientsAndSubRecipes: true).ToList();
+            Recipes = RecipesBLL
+                .GetAllRecipes(includeIngredientsAndSubRecipes: true)
+                .ToList();
         }
 
         private void GvRecipesDataBind(IEnumerable<RecipeDTO> recipes)
         {
-            var data = recipes.Select(p =>
-            new
+            var data = recipes.Select(p => new
             {
                 Id = p.Id,
                 RecipeName = StringHelper.TrimLongName(p.RecipeName),
                 RecipeEfficiency = $"{p.Efficiency:P}",
-                RecipeCost = $"{RecipesBLL.CalculateRecipeCosts(p):C2}",
-            }).ToList();
+                RecipeCost = $"{RecipesBLL.CalculateRecipeCosts(p):C2}"
+            })
+            .ToList();
 
             gvRecipes.DataSource = data;
-
             gvRecipes.Refresh();
-
             btnUpdateRecipe.Enabled = btnViewRecipe.Enabled = data.Count > 0;
         }
 
         private void FilterRecipesGridView()
         {
-            if (string.IsNullOrEmpty(txtSearchRecipeName.Text.Trim()))
+            var term = txtSearchRecipeName.Text.Trim().ToLower();
+            if (string.IsNullOrEmpty(term))
             {
                 GvRecipesDataBind(Recipes);
                 return;
             }
 
-            var filteredSource = Recipes.Where(p => p.RecipeName.ToLower().Contains(txtSearchRecipeName.Text.ToLower()));
-            GvRecipesDataBind(filteredSource);
+            var filtered = Recipes
+                .Where(p => p.RecipeName.ToLower().Contains(term));
+
+            GvRecipesDataBind(filtered);
         }
 
         private void OnRecipeAdded(object sender, EventArgs e)
@@ -95,24 +107,34 @@ namespace RecetarioWinformsUI.Recipes
 
         private void BtnAddRecipe_Click(object sender, EventArgs e)
         {
-            var frmAddRecipe = new AddRecipe(RecipesBLL, RecipeIngredientsBLL, RecipeSubRecipesBLL, UnitsBLL, IngredientsBLL);
-            frmAddRecipe.ShowDialog();
+            using var frmAdd = new AddRecipe(
+                RecipesBLL,
+                RecipeIngredientsBLL,
+                RecipeSubRecipesBLL,
+                UnitsBLL,
+                IngredientsBLL);
+            frmAdd.ShowDialog();
         }
 
         private void BtnUpdateRecipe_Click(object sender, EventArgs e)
         {
-            var recipeIdSelected = gvRecipes.SelectedRows[0].Cells["Id"].Value as long?;
-
-            if (recipeIdSelected == null)
+            var id = gvRecipes.SelectedRows[0].Cells["Id"].Value as long?;
+            if (id == null)
             {
-                MessageBox.Show("Tried to Update recipe without Id", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Tried to Update recipe without Id", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var frmUpdateRecipe = new UpdateRecipe((int)recipeIdSelected.Value, RecipesBLL, UnitsBLL, IngredientsBLL);
-            frmUpdateRecipe.ShowDialog();
+            using var frmUpdate = new UpdateRecipe(
+                (int)id.Value,
+                RecipesBLL,
+                UnitsBLL,
+                IngredientsBLL,
+                RecipeIngredientsBLL,
+                RecipeSubRecipesBLL);
+            frmUpdate.ShowDialog();
         }
-
 
         private void BtnCancel_Click(object sender, EventArgs e)
         {
@@ -123,16 +145,11 @@ namespace RecetarioWinformsUI.Recipes
         {
             if (e.ColumnIndex == gvRecipes.Columns["RecipeName"].Index)
             {
-                var recipeId = gvRecipes.Rows[e.RowIndex].Cells["Id"].Value as long?;
-
-                if (recipeId == null)
-                {
-                    MessageBox.Show("Tried to access recipe without Id", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                var id = gvRecipes.Rows[e.RowIndex].Cells["Id"].Value as long?;
+                if (id == null) return;
 
                 var cell = gvRecipes.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                cell.ToolTipText = Recipes.FirstOrDefault(p => p.Id == recipeId)?.RecipeName;
+                cell.ToolTipText = Recipes.FirstOrDefault(p => p.Id == id)?.RecipeName;
             }
         }
 
@@ -143,20 +160,47 @@ namespace RecetarioWinformsUI.Recipes
 
         private void OpenAndShowViewRecipeForm()
         {
-            var recipeIdSelected = gvRecipes.SelectedRows[0].Cells["Id"].Value as long?;
-
-            if (recipeIdSelected == null)
+            var id = gvRecipes.SelectedRows[0].Cells["Id"].Value as long?;
+            if (id == null)
             {
-                MessageBox.Show("Tried to View recipe without Id", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Tried to View recipe without Id", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var frmViewRecipe = new ViewRecipe((int)recipeIdSelected.Value, RecipesBLL) // Pasamos el BLL al formulario
+            var frmView = new ViewRecipe((int)id.Value, RecipesBLL)
             {
                 MdiParent = this.MdiParent
             };
+            frmView.Show();
+        }
 
-            frmViewRecipe.Show();
+        /// <summary>
+        /// Recorre recursivamente todos los controles hijos y suscribe Enter y MouseClick
+        /// para hacer SelectAll() en TextBoxBase y NumericUpDown.
+        /// </summary>
+        private void AttachSelectAllBehavior(Control parent)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c is TextBoxBase tb)
+                {
+                    tb.Enter += (s, e) => tb.SelectAll();
+                    tb.MouseClick += (s, e) => tb.SelectAll();
+                }
+                else if (c is NumericUpDown nud)
+                {
+                    var inner = nud.Controls.OfType<TextBox>().FirstOrDefault();
+                    if (inner != null)
+                    {
+                        inner.Enter += (s, e) => inner.SelectAll();
+                        inner.MouseClick += (s, e) => inner.SelectAll();
+                    }
+                }
+
+                if (c.HasChildren)
+                    AttachSelectAllBehavior(c);
+            }
         }
     }
 }

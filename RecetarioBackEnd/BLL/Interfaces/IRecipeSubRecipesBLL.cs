@@ -9,5 +9,6 @@ namespace RecetarioBackEnd.BLL.Interfaces
         void CreateRecipeSubRecipe(RecipeSubRecipeDTO recipeSubRecipeDTO);
         void UpdateRecipeSubRecipe(RecipeSubRecipeDTO recipeSubRecipeDTO);
         bool SubRecipeExistsInRecipe(int recipeId, long subRecipeId);
+        void DeleteRecipeSubRecipe(int id);
     }
 }
